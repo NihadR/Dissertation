@@ -29,7 +29,9 @@
       id="mainNav"
     >
       <div class="container">
-        <a class="navbar-brand js-scroll-trigger" href="">Tutor4U</a>
+        <a class="navbar-brand js-scroll-trigger" href="{{ url_for('home') }}"
+          >Tutor4U</a
+        >
 
         <button
           class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded"
@@ -48,21 +50,21 @@
             <li class="nav-item mx-0 mx-lg-1">
               <a
                 class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
-                href="/about"
+                href="{{ url_for('about') }}"
                 >About</a
               >
             </li>
             <li class="nav-item mx-0 mx-lg-1">
               <a
                 class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
-                href="#"
+                href="{{ url_for('login') }}"
                 >Login</a
               >
             </li>
             <li class="nav-item mx-0 mx-lg-1">
               <a
                 class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
-                href="#"
+                href="{{ url_for('register') }}"
                 >Register</a
               >
             </li>
@@ -71,7 +73,12 @@
       </div>
     </nav>
     <div class="container">
-      {% block content %}{% endblock %}
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">
+        {{ message }}
+      </div>
+      {% endfor %} {% endif %} {%endwith %} {% block content %}{% endblock %}
     </div>
 
     <!-- Optional JavaScript -->
