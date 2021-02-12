@@ -5,5 +5,5 @@
    export FLASK_DEBUG=1
 
 1. To run server
-   export FLASK_APP=flaskblog.py
+   export FLASK_APP=run.py
    flask run
