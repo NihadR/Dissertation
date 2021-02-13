@@ -76,3 +76,9 @@ def account():
 @login_required
 def take_test():
     return render_template('test.html', title='Pretest')
+
+
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin():
+    return render_template('admin.html', title='Admin')
