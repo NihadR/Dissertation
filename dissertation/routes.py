@@ -70,3 +70,9 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('account.html', title='acount', form=form)
+
+
+@app.route('/test', methods=['GET', 'POST'])
+@login_required
+def take_test():
+    return render_template('test.html', title='Pretest')
