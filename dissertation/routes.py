@@ -3,6 +3,7 @@ from dissertation import app, db, bcrypt
 from dissertation.forms import RegistrationForm, LoginForm, UpdateAccForm
 from dissertation.models import User, Topic, BNModel, Course
 from flask_login import login_user, current_user, logout_user, login_required
+from collections import Counter
 
 
 @app.route('/')
@@ -82,3 +83,58 @@ def take_test():
 @login_required
 def admin():
     return render_template('admin.html', title='Admin')
+
+
+questions = {
+    'How do you best revise?': ['Through the use of diagrams', 'Through the use of videos and lectures',
+                                'Through notes and reading material', 'Through participating in practicals'],
+    "What's the best way for you to learn something new?": ['Through charts', 'Watching a video about it',
+                                                            'Reading a book about it', 'Figuring it out on your own'],
+    "In a new country how would you find your way around?": ['Using a map', 'Using the internet',
+                                                             'Read an atlas', 'Walk around till you find your destination'],
+    "What kind of book do you like to read": ["A book with images", "Audio book", "A novel", "Book with crosswords"],
+    "What do you think about exams?": ['Would prefer if they have more diagram based questions', 'Would prefer more oral questions',
+                                       'I like them', 'Would prefer more practical assessments'],
+    "How do you solve problems": ["Visualising the problem", "Thinking out loud", "Through writing the problem down",
+                                  "Thinking about while exercising"]
+}
+questions3 = {
+    "What do you like to do relax?": ['Read', 'Listen to music', 'Exercise'],
+    "In what setting do you learn the best": ['Study group', 'Study session by yourself', 'Field Trips'],
+    "Can you memorise song lyrics after listening to it a few times?": ['Yes, I can memorise it easily', 'No, I need to read the song lyrics',
+                                                                        "No, but I prefer dancing to it"],
+    "Do you find youself needing to take frequent breaks when studying or restless during a lecture": ['No, I like it', 'Yes, its too much reading for me ', 'Yes, I would like more practical based material']
+}
+
+
+@app.route('/learning_style', methods=['GET', 'POST'])
+@login_required
+def learning_style():
+    if request.method == 'POST':
+        print('hi')
+        learningstyle = []
+        for i in questions.keys():
+            answered = request.form[i]
+            if questions[i][0] == answered:
+                learningstyle.append('A')
+            elif questions[i][1] == answered:
+                learningstyle.append('B')
+            elif questions[i][2] == answered:
+                learningstyle.append('C')
+            else:
+                learningstyle.append('D')
+        for i in questions3.keys():
+            answered = request.form[i]
+            if questions3[i][0] == answered:
+                learningstyle.append('A')
+                learningstyle.append('B')
+            elif questions3[i][1] == answered:
+                learningstyle.append('C')
+            else:
+                learningstyle.append('D')
+        print(learningstyle)
+        ans = Counter(learningstyle)
+        ans = ans.most_common(1)[0][0]
+        print('ans', ans)
+
+    return render_template('lstyle.html',  q=questions, q3=questions3)

@@ -15,11 +15,15 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     test_taken = db.Column(db.Boolean, unique=False, default=False)
     pretest_result = db.Column(db.Integer, nullable=True)
+    # learning_style_test_taken = db.Column(
+    #     db.Boolean, unique=False, default=False)
+    # learning_style = db.Column(db.String(20), nullable=True)
     courses = db.relationship('Course', backref='student_id', lazy=True)
     bnmodels = db.relationship('BNModel', backref='student_id', lazy=True)
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.test_taken}', '{self.pretest_result}')"
+        # ,'{self.learning_style_test_taken}', '{self.learning_style}'
 
 
 class Topic(db.Model):
