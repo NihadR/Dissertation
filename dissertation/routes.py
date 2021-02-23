@@ -4,6 +4,9 @@ from dissertation.forms import RegistrationForm, LoginForm, UpdateAccForm
 from dissertation.models import User, Topic, BNModel, Course
 from flask_login import login_user, current_user, logout_user, login_required
 from collections import Counter
+from statistics import mode
+from dissertation.testquestions import questions, lsquestions, lsquestions3
+import re
 
 
 @app.route('/')
@@ -85,56 +88,109 @@ def admin():
     return render_template('admin.html', title='Admin')
 
 
-questions = {
-    'How do you best revise?': ['Through the use of diagrams', 'Through the use of videos and lectures',
-                                'Through notes and reading material', 'Through participating in practicals'],
-    "What's the best way for you to learn something new?": ['Through charts', 'Watching a video about it',
-                                                            'Reading a book about it', 'Figuring it out on your own'],
-    "In a new country how would you find your way around?": ['Using a map', 'Using the internet',
-                                                             'Read an atlas', 'Walk around till you find your destination'],
-    "What kind of book do you like to read": ["A book with images", "Audio book", "A novel", "Book with crosswords"],
-    "What do you think about exams?": ['Would prefer if they have more diagram based questions', 'Would prefer more oral questions',
-                                       'I like them', 'Would prefer more practical assessments'],
-    "How do you solve problems": ["Visualising the problem", "Thinking out loud", "Through writing the problem down",
-                                  "Thinking about while exercising"]
-}
-questions3 = {
-    "What do you like to do relax?": ['Read', 'Listen to music', 'Exercise'],
-    "In what setting do you learn the best": ['Study group', 'Study session by yourself', 'Field Trips'],
-    "Can you memorise song lyrics after listening to it a few times?": ['Yes, I can memorise it easily', 'No, I need to read the song lyrics',
-                                                                        "No, but I prefer dancing to it"],
-    "Do you find youself needing to take frequent breaks when studying or restless during a lecture": ['No, I like it', 'Yes, its too much reading for me ', 'Yes, I would like more practical based material']
-}
-
-
 @app.route('/learning_style', methods=['GET', 'POST'])
 @login_required
 def learning_style():
+    questions = lsquestions
+    questions3 = lsquestions3
     if request.method == 'POST':
-        print('hi')
         learningstyle = []
-        for i in questions.keys():
+        for i in lsquestions.keys():
             answered = request.form[i]
-            if questions[i][0] == answered:
+            if lsquestions[i][0] == answered:
                 learningstyle.append('A')
-            elif questions[i][1] == answered:
+            elif lsquestions[i][1] == answered:
                 learningstyle.append('B')
-            elif questions[i][2] == answered:
+            elif lsquestions[i][2] == answered:
                 learningstyle.append('C')
             else:
                 learningstyle.append('D')
-        for i in questions3.keys():
+        for i in lsquestions3.keys():
             answered = request.form[i]
-            if questions3[i][0] == answered:
+            if lsquestions3[i][0] == answered:
                 learningstyle.append('A')
                 learningstyle.append('B')
-            elif questions3[i][1] == answered:
+            elif lsquestions3[i][1] == answered:
                 learningstyle.append('C')
             else:
                 learningstyle.append('D')
+        ans = mode(learningstyle)
         print(learningstyle)
-        ans = Counter(learningstyle)
-        ans = ans.most_common(1)[0][0]
-        print('ans', ans)
+        style = ''
+        if ans == 'A':
+            style = 'Visual'
+        elif ans == 'B':
+            style = 'Reading/Writing'
+        elif ans == 'C':
+            style = 'Auditory'
+        else:
+            style = 'Kinesthesis'
+
+        current_user.learning_style = style
+        current_user.learning_style_test_taken = True
+        db.session.commit()
+        flash('Learning Style results have been submitted', 'success')
+        return redirect(url_for('account'))
 
     return render_template('lstyle.html',  q=questions, q3=questions3)
+
+
+@app.route('/pretest', methods=['GET', 'POST'])
+@login_required
+def pretest():
+    question = questions
+    # if request.method == 'POST':
+    #     testanswers = []
+    #     for i in question.keys():
+    #         answered = request.form[i]
+
+    #         # print('answres', answered.strip())
+    #         # print('questio', questions[i][0].strip())
+    #         if question[i][0] == answered:
+    #             testanswers.append('1')
+    #         else:
+    #             testanswers.append('0')
+    #     print(testanswers)
+    # if request.method == 'POST':
+    #     testanswers = []
+    #     for q in questions:
+    #         print(request.form[q.get('id')], q.get('correct'))
+    #         # print('correct')
+    #         if request.form[q.get('id')] == q.get('correct'):
+    #             testanswers.append('0')
+    #         else:
+    #             testanswers.append('1')
+    #     print(testanswers)
+    if request.method == 'POST':
+        testanswers = []
+        for i in question:
+            if request.form[i.get('id')] == i.get('correct'):
+                testanswers.append('1')
+            else:
+                testanswers.append('0')
+        print(testanswers)
+
+    return render_template('pretest.html',  q=question)
+# questions = [
+#     {
+#         "id" : 1,
+#         "question" :" asobfbdosfj",
+#         "answers" : {
+#             '1' : "answer 1",
+#             '2' :"answer 2"
+#         },
+#         "correct" : '1'
+
+#     },
+#     {
+#         "id" : 2,
+#         "question" :" asobfbdosfj",
+#         "answers" : {
+#             '1' : "answer 1",
+#             '2' :"answer 2"
+#         },
+#         "correct" : '1'
+
+#     }
+# ]
+# questions.answers.keys()

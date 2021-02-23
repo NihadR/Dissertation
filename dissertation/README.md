@@ -7,3 +7,10 @@
 1. To run server
    export FLASK_APP=run.py
    flask run
+
+from dissertation import db
+
+db.create_all()
+
+from dissertation.models import User
+User.query.first()

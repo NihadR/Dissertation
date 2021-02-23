@@ -6,13 +6,13 @@
       {% for i in q %}
       <li>{{ i }}</li>
       {% for j in q[i] %}
-      <input type="radio" value="{{ j }}" name="{{ i }}" />{{
+      <input type="radio" value="{{ j }}" name="{{ i }}" required />{{
         j
       }}<br />
       {% endfor %} {% endfor %} {% for i in q3 %}
       <li>{{ i }}</li>
       {% for j in q3[i] %}
-      <input type="radio" value="{{ j }}" name="{{ i }}" />{{
+      <input type="radio" value="{{ j }}" name="{{ i }}" required />{{
         j
       }}<br />
       {% endfor %} {% endfor %}
