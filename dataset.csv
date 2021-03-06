@@ -1,4 +1,4 @@
-userid,question1,correct,question2,correct,question3,correct,ms_response_time
+user_id,question1,correct,question2,correct,question3,correct,ms_response_time
 1,Statement,1,IfStatement,1,ForLoop,1,180937
 2,Statement,0,IfStatement,0,ForLoop,0,44460
 3,Statement,0,IfStatement,0,ForLoop,0,86109
