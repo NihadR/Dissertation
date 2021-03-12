@@ -1,4 +1,4 @@
-user_id,skill_name,correctms_response_time
+user_id,skill_name,correct,ms_response_time
 1,statement,0,361576
 1,ifstatement,0,361576
 1,forloop,0,361576
