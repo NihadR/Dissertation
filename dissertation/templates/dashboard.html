@@ -1,0 +1,9 @@
+{% extends "template.html" %} {% block content %}
+<div class="container">
+  {% if current_user.test_taken == True %}
+
+  <a href="/pretest" class="button " role="button">Pre-Test</a>
+
+  {% endif %}
+</div>
+{% endblock %}

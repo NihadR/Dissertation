@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, RadioField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, RadioField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, InputRequired
 from dissertation.models import User
 
@@ -32,6 +32,11 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
+class AdminLoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember = BooleanField('Remember Me')
+    submit = SubmitField('Login')
 
 class UpdateAccForm(FlaskForm):
     username = StringField('Username', validators=[
@@ -55,5 +60,6 @@ class UpdateAccForm(FlaskForm):
 class TopicForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
-    content = TextAreaField('Description', validators=[DataRequired()])
-    submit = SubmitField('Create Topic')
+    content = TextAreaField('Content', validators=[DataRequired()])
+    answer = IntegerField('Answer', validators=[DataRequired()])
+    submit = SubmitField('Add Task')

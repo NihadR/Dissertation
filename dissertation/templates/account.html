@@ -3,12 +3,15 @@
   <div class="media-body">
     <h2 class="account-heading">{{ current_user.username }}</h2>
     <p class="text-secondary">{{ current_user.email }}</p>
+    {% if current_user.test_taken == False %}
+    <p class="text-secondary">
+      Taken the test? No
+    </p>
+    {% else %}
+    <p class="text-secondary">Taken the test? Yes</p>
+    {% endif %}
     <p class="text-secondary">
       Learning Style: {{ current_user.learning_style }}
-    </p>
-    <p class="text-secondary">Taken the test? {{ current_user.test_taken }}</p>
-    <p class="text-secondary">
-      Result of your pretest: {{ current_user.pretest_result }}
     </p>
   </div>
   <div class="content-section">

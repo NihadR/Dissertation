@@ -102,7 +102,48 @@ questions = [
     }''',
                      '4':      "  I don't know"},
          "correct":  '3'
-         }
+         },
+
+    {"id": "4",
+     "question": 'Transalate this statement into an if statement, if it is raining today then I will stay home ',
+     "answers": {'1': '''
+    public class Main {
+        public static void main(String[] args) {
+            Bool stayHome = False;
+            Bool isRaining = True;
+            if (isRaining == True);
+                stayHome = True;
+        }
+    }''',
+                 '2': '''
+    public class Main {
+        public static void main(String[] args) {
+            Bool stayHome = False;
+            Bool isRaining = True;
+            if (isRaining.isequals(True));
+                stayHome = True;
+        }
+    }''',
+    '3': '''
+    public class Main {
+        public static void main(String[] args) {
+            Bool stayHome = False;
+            Bool isRaining = True;
+            if (isRaining = True);
+                stayHome = true;
+        }
+    }''',
+     '4': "I don't know"},
+     'correct': '1'},
+    {"id": "5",
+     "question": 'Which input would create an infinite for loop?',
+     "answers": {'1': 'for(i=0, i++)', '2': 'for(;;)'},
+     'correct': '2'},
+    {"id": "6",
+     "question": "A statement does not require the type to be declared?",
+     "answers": {'1': 'True', '2': 'False'},
+     'correct': '2'}
+
 ]
 
 
