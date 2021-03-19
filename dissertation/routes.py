@@ -206,10 +206,13 @@ def pretest():
         state, ifstate, forl = 0, 0, 0
         if (testanswers[0] + testanswers[5])/2 == 1:
             state = 1
+            print('1hi')
         if (testanswers[1] + testanswers[3])/2 == 1:
             ifstate = 1
+            print('2hi')
         if (testanswers[2] + testanswers[4])/2 == 1:
             forl = 1
+            print('3hi')
 
         # df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
         #                    'skill_name': ['statement', 'ifstatement', 'forloop'],
