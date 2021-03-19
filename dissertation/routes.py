@@ -1,17 +1,25 @@
 from flask import render_template, flash, redirect, url_for, request
 from dissertation import app, db, bcrypt
-from dissertation.forms import RegistrationForm, LoginForm, UpdateAccForm
-from dissertation.models import User, Topic, BNModel, Course
+from dissertation.forms import RegistrationForm, LoginForm, UpdateAccForm, AdminLoginForm, TopicForm
+from dissertation.models import User, Topic, BNModel, Course, Admin
 from flask_login import login_user, current_user, logout_user, login_required
 from collections import Counter
 from statistics import mode
 from dissertation.testquestions import questions, lsquestions, lsquestions3
-import re
+from dissertation.algorithm import runmodel, predictmodel
+import pandas as pd
+import json
+import time
+import random
+from datetime import datetime
+
+var = 0
 
 
 @app.route('/')
 @app.route('/home')
 def home():
+    runmodel()
     return render_template('home.html')
 
 
@@ -37,6 +45,21 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
+@app.route('/create_task', methods=['GET', 'POST'])
+@login_required
+def createtask():
+    form = TopicForm()
+    if form.validate_on_submit():
+        option = request.form.get('options')
+        task = Topic(title=form.title.data, description=form.description.data, content=form.content.data,
+                     question_type=option, answer=form.answer.data)
+        db.session.add(task)
+        db.session.commit()
+        flash('The task has been created', 'success')
+        return redirect(url_for('createtask'))
+    return render_template('create_task.html', title='Create Task', form=form)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -52,6 +75,23 @@ def login():
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='login', form=form)
+
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+def adminlogin():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Admin.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            flash('Login Successful', 'success')
+            return redirect(next_page) if next_page else redirect(url_for('admin'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('admin_login.html', title='login', form=form)
 
 
 @app.route('/logout')
@@ -74,6 +114,12 @@ def account():
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('account.html', title='acount', form=form)
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 
 @app.route('/test', methods=['GET', 'POST'])
@@ -139,58 +185,106 @@ def learning_style():
 @login_required
 def pretest():
     question = questions
-    # if request.method == 'POST':
-    #     testanswers = []
-    #     for i in question.keys():
-    #         answered = request.form[i]
+    global var
+    if var == 0:
+        var = datetime.now()
 
-    #         # print('answres', answered.strip())
-    #         # print('questio', questions[i][0].strip())
-    #         if question[i][0] == answered:
-    #             testanswers.append('1')
-    #         else:
-    #             testanswers.append('0')
-    #     print(testanswers)
-    # if request.method == 'POST':
-    #     testanswers = []
-    #     for q in questions:
-    #         print(request.form[q.get('id')], q.get('correct'))
-    #         # print('correct')
-    #         if request.form[q.get('id')] == q.get('correct'):
-    #             testanswers.append('0')
-    #         else:
-    #             testanswers.append('1')
-    #     print(testanswers)
     if request.method == 'POST':
+        endtime = datetime.now()
+
         testanswers = []
         for i in question:
             if request.form[i.get('id')] == i.get('correct'):
-                testanswers.append('1')
+                testanswers.append(1)
             else:
-                testanswers.append('0')
-        print(testanswers)
+                testanswers.append(0)
+        ans = json.dumps(testanswers)
+        # print(type(ans))
+        current_user.test_taken = True
+        current_user.pretest_result = ans
+        db.session.commit()
+        state, ifstate, forl = 0, 0, 0
+        if (testanswers[0] + testanswers[5])/2 == 1:
+            state = 1
+        if (testanswers[1] + testanswers[3])/2 == 1:
+            ifstate = 1
+        if (testanswers[2] + testanswers[4])/2 == 1:
+            forl = 1
 
+        # df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
+        #                    'skill_name': ['statement', 'ifstatement', 'forloop'],
+        #                    'correct': [state, ifstate, forl],
+        #                    'hints': [0, 0, 0], 'attempts': [1, 1, 1],
+        #                    'start_time': [var, var, var],
+        #                    'end_time': [endtime, endtime, endtime]})
+        df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
+                           'skill_name': ['statement', 'ifstatement', 'forloop'],
+                           'correct': [state, ifstate, forl]})
+        print(df)
+        pred = predictmodel(df)
+        pretest_analysis(pred)
+        return redirect(url_for('home'))
     return render_template('pretest.html',  q=question)
-# questions = [
-#     {
-#         "id" : 1,
-#         "question" :" asobfbdosfj",
-#         "answers" : {
-#             '1' : "answer 1",
-#             '2' :"answer 2"
-#         },
-#         "correct" : '1'
 
-#     },
-#     {
-#         "id" : 2,
-#         "question" :" asobfbdosfj",
-#         "answers" : {
-#             '1' : "answer 1",
-#             '2' :"answer 2"
-#         },
-#         "correct" : '1'
 
-#     }
-# ]
-# questions.answers.keys()
+def pretest_analysis(df):
+    statement = df['state_predictions'].iloc[0]
+    ifstatement = df['state_predictions'].iloc[1]
+    forloop = df['state_predictions'].iloc[2]
+    strengths = []
+    weaknesses = []
+    if statement < 0.9:
+        weaknesses.append('statement')
+    else:
+        strengths.append('statement')
+    if ifstatement < 0.9:
+        weaknesses.append('ifstatement')
+    else:
+        strengths.append('ifstatement')
+    if forloop < 0.9:
+        weaknesses.append('forloop')
+    else:
+        strengths.append('forloop')
+    stren = ''.join(strengths)
+    weak = ''.join(weaknesses)
+    tasklist = gen_task_list(weaknesses)
+    course = Course(student_id=current_user, task_list=str(tasklist))
+    current_user.strengths = stren
+    current_user.weaknesses = weak
+    db.session.add(course)
+    db.session.commit()
+
+
+def gen_task_list(weaknesses):
+    tasklist = []
+    for i in weaknesses:
+        task = Topic.query.filter_by(question_type=i).all()
+        length = len(task)
+        print('this', length)
+        if length == 1:
+            taskid = task[0]
+            tasklist.append(taskid.id)
+        else:
+            rand = random.randint(0, length)
+            print('rand', rand)
+            taskid = task[rand]
+            tasklist.append(taskid.id)
+    return tasklist
+
+
+@app.route('/content')
+def content():
+    course = Course.query.filter_by(user_id=current_user.id).first()
+    tasklist = course.task_list
+    for i in tasklist:
+    print(tasklist)
+    # if course = '':
+    #     # do nothing
+    # else:
+
+    return render_template('content.html')
+
+
+@app.route('/compiler')
+def compiler():
+    return render_template('testcompiler.html')

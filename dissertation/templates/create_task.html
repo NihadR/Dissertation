@@ -1,0 +1,37 @@
+{% extends "template.html" %} {% block content %}
+<div class="content-section">
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Create Task</legend>
+      <div class="form-group">
+        {{ form.title.label(class="form-control-label") }}
+        {{ form.title(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        <label for="task">Choose a task:</label>
+
+        <select name="options">
+          <option value="statement">Statement</option>
+          <option value="ifstatement">If Statement</option>
+          <option value="forloop">For Loop</option>
+        </select>
+      </div>
+      <div class="form-group">
+        {{ form.description.label(class="form-control-label") }}
+        {{ form.description(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.content.label(class="form-control-label") }}
+        {{ form.content(class="form-control form-control-lg") }}
+      </div>
+      <div class="form-group">
+        {{ form.answer.label(class="form-control-label") }}
+        {{ form.answer(class="form-control form-control-lg") }}
+      </div>
+    </fieldset>
+
+    <input type="submit" value="Create Task" />
+  </form>
+</div>
+{% endblock content %}

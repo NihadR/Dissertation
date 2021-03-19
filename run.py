@@ -1,4 +1,6 @@
 from dissertation import app
 
+
 if __name__ == '__main':
-    app.run(debug=True)
+
+    app.run(debug=True, use_reloader=False)

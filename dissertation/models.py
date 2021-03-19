@@ -14,15 +14,17 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     test_taken = db.Column(db.Boolean, unique=False, default=False)
-    pretest_result = db.Column(db.Integer, nullable=True)
+    pretest_result = db.Column(db.String(60), nullable=True)
     learning_style_test_taken = db.Column(
         db.Boolean, unique=False, default=False)
     learning_style = db.Column(db.String(20), nullable=True)
+    strengths = db.Column(db.String(60), nullable=True)
+    weaknesses = db.Column(db.String(60), nullable=True)
     courses = db.relationship('Course', backref='student_id', lazy=True)
     bnmodels = db.relationship('BNModel', backref='student_id', lazy=True)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.test_taken}', '{self.pretest_result}' , '{self.learning_style_test_taken}', '{self.learning_style}')"
+        return f"User('{self.id}', '{self.username}', '{self.email}', '{self.test_taken}', '{self.pretest_result}' , '{self.learning_style_test_taken}', '{self.learning_style}', '{self.strengths}', '{self.weaknesses}')"
 
 
 class Topic(db.Model):
@@ -30,12 +32,11 @@ class Topic(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     content = db.Column(db.Text, nullable=False)
-    date_postedd = db.Column(
-        db.DateTime, nullable=False, default=datetime.utcnow)
-    coursetopics = db.relationship('Course', backref='task_names', lazy=True)
+    question_type = db.Column(db.Text, nullable=False)
+    answer = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return f"Topic('{self.title}', '{self.description}', '{self.content}'"
+        return f"Topic('{self.title}', '{self.description}', '{self.content}', '{self.question_type}', '{self.answer}')"
 
 
 class BNModel(db.Model):
@@ -44,7 +45,7 @@ class BNModel(db.Model):
         db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f"BNModel('{self.user_id}'"
+        return f"BNModel('{self.user_id}')"
 
 
 class Course(db.Model):
@@ -52,8 +53,15 @@ class Course(db.Model):
     user_id = db.Column(
         db.Integer, db.ForeignKey('user.id'), nullable=False)
     task_list = db.Column(db.Text, nullable=False)
-    task_id = db.Column(
-        db.String(120), db.ForeignKey('topic.id'), nullable=False)
 
     def __repr__(self):
-        return f"Topic('{self.user_id}', '{self.task_list}', '{self.task_id}'"
+        return f"Course('{self.user_id}', '{self.task_list}')"
+
+
+class Admin(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+
+    def __repr__(self):
+        return f"Admin('{self.id}', '{self.email}')"
