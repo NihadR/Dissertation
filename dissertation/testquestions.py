@@ -124,7 +124,7 @@ questions = [
                 stayHome = True;
         }
     }''',
-    '3': '''
+                 '3': '''
     public class Main {
         public static void main(String[] args) {
             Bool stayHome = False;
@@ -133,7 +133,7 @@ questions = [
                 stayHome = true;
         }
     }''',
-     '4': "I don't know"},
+                 '4': "I don't know"},
      'correct': '1'},
     {"id": "5",
      "question": 'Which input would create an infinite for loop?',

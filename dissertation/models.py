@@ -33,10 +33,10 @@ class Topic(db.Model):
     description = db.Column(db.Text, nullable=False)
     content = db.Column(db.Text, nullable=False)
     question_type = db.Column(db.Text, nullable=False)
-    answer = db.Column(db.Text, nullable=False)
+    answer = db.Column(db.String(200), nullable=False)
 
     def __repr__(self):
-        return f"Topic('{self.title}', '{self.description}', '{self.content}', '{self.question_type}', '{self.answer}')"
+        return f"Topic('{self.id}', '{self.title}', '{self.description}', '{self.content}', '{self.question_type}', '{self.answer}')"
 
 
 class BNModel(db.Model):

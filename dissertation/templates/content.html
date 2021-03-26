@@ -1,1 +1,20 @@
-{% extends "template.html" %} {% block content %} {% endblock %}
+{% extends "template.html" %} {% block content %}
+
+<div class="content-section">
+  <form action="" method="POST">
+    <ol>
+      {% for i in q %}
+      <li>{{ i.title }}</li>
+      <li hidden>{{ i.question_type }}</li>
+      {% for key in i.content %}
+      <pre
+        class="prettyprint"
+      ><input type="radio" id="{{ key }}" name="{{ i.id }}" value="{{ key }}" required> {{ i.content[key] }}</pre>
+      <br />
+      {% endfor %} {% endfor %}
+    </ol>
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+
+{% endblock %}
