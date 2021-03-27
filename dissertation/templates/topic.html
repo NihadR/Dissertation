@@ -1,0 +1,13 @@
+{% extends "template.html" %} {% block content %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2">{{ topic.title }}</a>
+    </div>
+    <h2 class="article-title">
+      {{ topic.question_type }}
+    </h2>
+    <p class="article-content">{{ topic.description }}</p>
+  </div>
+</article>
+{% endblock content %}

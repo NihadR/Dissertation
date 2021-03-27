@@ -1,0 +1,17 @@
+{% extends "template.html" %} {% block content %} {% for topic in topics %}
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ topic.title }}</a>
+    </div>
+    <h2>
+      <a
+        class="article-title"
+        href="{{ url_for('topic', topic_id = topic.id) }}"
+        >{{ topic.question_type }}</a
+      >
+    </h2>
+    <p class="article-content">{{ topic.description }}</p>
+  </div>
+</article>
+{% endfor %} {% endblock content %}

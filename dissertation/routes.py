@@ -97,6 +97,41 @@ def adminlogin():
     return render_template('admin_login.html', title='login', form=form)
 
 
+@app.route('/view_topics')
+@login_required
+def view_topics():
+    topics = Topic.query.all()
+    return render_template('view_topics.html', topics=topics)
+
+
+@app.route('/view_topics/<int:topic_id>')
+@login_required
+def topic(topic_id):
+    topic = Topic.query.get_or_404(topic_id)
+    return render_template('topic.html', title=topic.title, topic=topic)
+
+
+@app.route('/view_topics/<int:topic_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_topic(topic_id):
+    topic = Topic.query.get_or_404(topic_id)
+    form = TopicForm()
+    if form.validate_on_submit():
+        topic.title = form.title.data
+        topic.content = form.content.data
+        topic.answer = form.answer.data
+        topic.description = form.description.data
+        db.session.commit()
+        flash('Topic has been updated', 'success')
+        return redirect(url_for('topic', topic_id=topic_id))
+    elif request.method == 'GET':
+        form.title.data = topic.title
+        form.content.data = topic.content
+        form.answer.data = topic.answer
+        form.description.data = topic.description
+    return render_template('create_task.html', title='Update Task', form=form)
+
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -261,16 +296,12 @@ def gen_task_list(weaknesses):
     tasklist = []
     for i in weaknesses:
         task = Topic.query.filter_by(question_type=i).all()
-        print(task)
         length = len(task)
-        print('length', length)
         if length == 1:
             taskid = task[0]
             tasklist.append(taskid.id)
         else:
             rand = random.randint(1, length)
-            print("rand", rand)
-            print('task', len(task))
             taskid = task[rand-1]
             tasklist.append(taskid.id)
     return tasklist
@@ -285,7 +316,6 @@ def get_course():
         course = Course.query.filter_by(user_id=current_user.id).first()
         strtask = course.task_list
         x = ast.literal_eval(strtask)
-        print('x', x)
         task = []
         for i in x:
             t = Topic.query.filter_by(id=i).first()
@@ -295,11 +325,7 @@ def get_course():
             dic = {}
             dic['id'] = str(i.id)
             dic['title'] = i.title
-            print('type', type(i.content))
             toStr = json.loads(i.content)
-            print(toStr)
-            print(toStr)
-            print(type(toStr))
             answers = ast.literal_eval(toStr)
             dic['content'] = answers
             dic['description'] = i.description
@@ -400,7 +426,7 @@ def content_analysis(df, list, length):
     print('Users', current_user.strengths)
     print('UsersW', current_user.weaknesses)
     if not current_user.strengths:
-        current_strengths = current_user.strengths
+        current_user.strengths = strengths
     else:
         current_strengths = current_user.strengths
         cs = ast.literal_eval(current_strengths)

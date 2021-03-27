@@ -20,6 +20,7 @@ class User(db.Model, UserMixin):
     learning_style = db.Column(db.String(20), nullable=True)
     strengths = db.Column(db.String(60), nullable=True)
     weaknesses = db.Column(db.String(60), nullable=True)
+    # is_admin = db.Column(db.Boolean, unique=False, default=False)
     courses = db.relationship('Course', backref='student_id', lazy=True)
     bnmodels = db.relationship('BNModel', backref='student_id', lazy=True)
 
