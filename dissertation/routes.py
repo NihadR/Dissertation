@@ -298,6 +298,7 @@ def get_course():
             print('type', type(i.content))
             toStr = json.loads(i.content)
             print(toStr)
+            print(toStr)
             print(type(toStr))
             answers = ast.literal_eval(toStr)
             dic['content'] = answers
@@ -318,9 +319,11 @@ def content():
 
     if request.method == 'POST':
         endtime = datetime.now()
-        print(questions)
         testanswers = []
         for i in questions:
+            print(i)
+            print('id', request.form[i.get('id')])
+            print('answer', i.get('answer'))
             if request.form[i.get('id')] == i.get('answer'):
                 testanswers.append(1)
                 testanswers.append(i['question_type'])
