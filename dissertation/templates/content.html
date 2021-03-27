@@ -1,5 +1,8 @@
-{% extends "template.html" %} {% block content %}
-
+{% extends "template.html" %} {% block content %} {% if not q %}
+<div class="content-section">
+  <h3>You have no tasks to complete at the moment.</h3>
+</div>
+{% else %}
 <div class="content-section">
   <form action="" method="POST">
     <ol>
@@ -16,5 +19,4 @@
     <input type="submit" value="Submit" />
   </form>
 </div>
-
-{% endblock %}
+{% endif %} {% endblock %}

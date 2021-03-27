@@ -46,9 +46,6 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-
-
-
 @app.route('/create_task', methods=['GET', 'POST'])
 @login_required
 def createtask():
@@ -204,6 +201,7 @@ def pretest():
                 testanswers.append(1)
             else:
                 testanswers.append(0)
+        ans = json.dumps(testanswers)
         current_user.test_taken = True
         current_user.pretest_result = ans
         db.session.commit()
@@ -237,15 +235,15 @@ def pretest_analysis(df):
     forloop = df['state_predictions'].iloc[2]
     strengths = []
     weaknesses = []
-    if statement < 0.9:
+    if statement < 0.8:
         weaknesses.append('statement')
     else:
         strengths.append('statement')
-    if ifstatement < 0.9:
+    if ifstatement < 0.8:
         weaknesses.append('ifstatement')
     else:
         strengths.append('ifstatement')
-    if forloop < 0.9:
+    if forloop < 0.8:
         weaknesses.append('forloop')
     else:
         strengths.append('forloop')
@@ -263,13 +261,17 @@ def gen_task_list(weaknesses):
     tasklist = []
     for i in weaknesses:
         task = Topic.query.filter_by(question_type=i).all()
+        print(task)
         length = len(task)
+        print('length', length)
         if length == 1:
             taskid = task[0]
             tasklist.append(taskid.id)
         else:
             rand = random.randint(1, length)
-            taskid = task[rand]
+            print("rand", rand)
+            print('task', len(task))
+            taskid = task[rand-1]
             tasklist.append(taskid.id)
     return tasklist
 
@@ -283,6 +285,7 @@ def get_course():
         course = Course.query.filter_by(user_id=current_user.id).first()
         strtask = course.task_list
         x = ast.literal_eval(strtask)
+        print('x', x)
         task = []
         for i in x:
             t = Topic.query.filter_by(id=i).first()
@@ -294,6 +297,8 @@ def get_course():
             dic['title'] = i.title
             print('type', type(i.content))
             toStr = json.loads(i.content)
+            print(toStr)
+            print(type(toStr))
             answers = ast.literal_eval(toStr)
             dic['content'] = answers
             dic['description'] = i.description
@@ -313,7 +318,7 @@ def content():
 
     if request.method == 'POST':
         endtime = datetime.now()
-
+        print(questions)
         testanswers = []
         for i in questions:
             if request.form[i.get('id')] == i.get('answer'):
@@ -337,66 +342,78 @@ def content():
                                'skill_name': [testanswers[1], testanswers[3], testanswers[5]],
                                'correct': [testanswers[0], testanswers[2], testanswers[4]]})
         pred = predictmodel(df)
+        print('content', pred)
         content_analysis(pred, testanswers, length)
     return render_template('content.html', q=questions)
 
 
 def content_analysis(df, list, length):
     statement = df['state_predictions'].iloc[0]
-    ifstatement = df['state_predictions'].iloc[1]
-    forloop = df['state_predictions'].iloc[2]
+
     val = length/2
     strengths = []
     weaknesses = []
+    course = Course.query.filter_by(user_id=current_user.id).first()
+    db.session.delete(course)
+    db.session.commit()
     if val == 1:
         state = (list[1], df['state_predictions'].iloc[0])
-        if state[1] < 0.9:
+        if state[1] < 0.8:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
     elif val == 2:
+        ifstatement = df['state_predictions'].iloc[1]
         state = (list[1], df['state_predictions'].iloc[0])
         state1 = (list[3], df['state_predictions'].iloc[1])
-        if state[1] < 0.9:
+        if state[1] < 0.8:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
-        if state1[1] < 0.9:
+        if state1[1] < 0.8:
             weaknesses.append(state1[0])
         else:
             strengths.append(state1[0])
     else:
+        ifstatement = df['state_predictions'].iloc[1]
+        forloop = df['state_predictions'].iloc[2]
         state = (list[1], df['state_predictions'].iloc[0])
         state1 = (list[3], df['state_predictions'].iloc[1])
         state2 = (list[5], df['state_predictions'].iloc[1])
-        if state[1] < 0.9:
+        if state[1] < 0.8:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
-        if state1[1] < 0.9:
+        if state1[1] < 0.8:
             weaknesses.append(state1[0])
         else:
             strengths.append(state1[0])
-        if state2[1] < 0.9:
+        if state2[1] < 0.8:
             weaknesses.append(state2[0])
         else:
             strengths.append(state2[0])
-    if current_user.strengths == '':
-
-    current_strengths = current_user.strengths
-    cs = ast.literal_eval(current_strengths)
-    print('hi', cs)
-    print('type', type(cs))
-    temp = [item for item in strengths if item not in cs]
-    temp2 = current_strengths + temp
-    stren = ''.join(temp2)
+    print("strengths", strengths)
+    print("weaknesses", weaknesses)
+    print('Users', current_user.strengths)
+    print('UsersW', current_user.weaknesses)
+    if not current_user.strengths:
+        current_strengths = current_user.strengths
+    else:
+        current_strengths = current_user.strengths
+        cs = ast.literal_eval(current_strengths)
+        print('hi', cs)
+        print('type', type(cs))
+        temp = [item for item in strengths if item not in cs]
+        temp2 = current_strengths + temp
+        stren = ''.join(temp2)
+        current_user.strengths = stren
     weak = ''.join(weaknesses)
     tasklist = gen_task_list(weaknesses)
-    course.task_list = tasklist
-    print(course)
-    current_user.strengths = stren
+    course = Course(student_id=current_user, task_list=str(tasklist))
     current_user.weaknesses = weak
+    db.session.add(course)
     db.session.commit()
+
 # strengths is '[]' remove the string to get the list and loop through and update
 
 
