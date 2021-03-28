@@ -29,11 +29,11 @@ Stuff to do
 
 fix key error bug on content page
 
-do the about page content, look into compiler if not then do online ide
+do the about page content, look into compiler if not then do online ide DONE
 
-add something to homepage
+add something to homepage DONE
 
-do dashboard button points
+do dashboard button points DONE
 
 do is_admin and make sure pages have correct accesss
 

@@ -448,4 +448,4 @@ def content_analysis(df, list, length):
 
 @app.route('/compiler')
 def compiler():
-    return render_template('testcompiler.html')
+    return render_template('ide.html')

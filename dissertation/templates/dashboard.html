@@ -3,13 +3,14 @@
 <article class="media content-section">
   <div class="media-body">
     <h2>
-      <a class="article-title" href="{{ url_for('pretest') }}">Pre-Test</a>
+      <a class="article-title" href="{{ url_for('pretest') }}">Pretest</a>
     </h2>
-    <p class="article-content"></p>
+    <p class="article-content">
+      Take this test to identify the areas you currently struggle with
+    </p>
   </div>
 </article>
-{% endif %}
-
+{% endif %} {% if current_user.learning_style_test_taken == False %}
 <article class="media content-section">
   <div class="media-body">
     <h2>
@@ -17,7 +18,23 @@
         >Learning Style Test</a
       >
     </h2>
-    <p class="article-content">Test</p>
+    <p class="article-content">
+      Take this test to identify your learning style
+    </p>
+  </div>
+</article>
+{% endif %}
+<article class="media content-section">
+  <div class="media-body">
+    <h2>
+      <a class="article-title" href="{{ url_for('compiler') }}"
+        >Development Area</a
+      >
+    </h2>
+    <p class="article-content">
+      Use this to complete your tasks<br />
+      Any issues with this IDE refer to the about page
+    </p>
   </div>
 </article>
 
@@ -26,7 +43,10 @@
     <h2>
       <a class="article-title" href="{{ url_for('content') }}">Content</a>
     </h2>
-    <p class="article-content"></p>
+    <p class="article-content">
+      Questions to help tackle current areas you identify with <br />
+      Note. This will be empty until you have completed the Pretest
+    </p>
   </div>
 </article>
 
