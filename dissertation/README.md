@@ -24,3 +24,19 @@ User.query.first()
    admin = Admin(email = 'nihad1999@hotmail.co.uk', password = hashed_password)
    db.session.add(admin)
    db.session.commit()
+
+Stuff to do
+
+fix key error bug on content page
+
+do the about page content, look into compiler if not then do online ide
+
+add something to homepage
+
+do dashboard button points
+
+do is_admin and make sure pages have correct accesss
+
+check strengths to see if it is being added
+
+REFACTOR

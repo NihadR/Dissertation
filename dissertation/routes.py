@@ -20,7 +20,7 @@ var = 0
 @app.route('/')
 @app.route('/home')
 def home():
-    runmodel()
+    # runmodel()
     return render_template('home.html')
 
 

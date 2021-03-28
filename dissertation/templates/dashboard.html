@@ -1,9 +1,33 @@
-{% extends "template.html" %} {% block content %}
-<div class="container">
-  {% if current_user.test_taken == True %}
+{% extends "template.html" %} {% block content %} {% if current_user.test_taken
+== True %}
+<article class="media content-section">
+  <div class="media-body">
+    <h2>
+      <a class="article-title" href="{{ url_for('pretest') }}">Pre-Test</a>
+    </h2>
+    <p class="article-content"></p>
+  </div>
+</article>
+{% endif %}
 
-  <a href="/pretest" class="button " role="button">Pre-Test</a>
+<article class="media content-section">
+  <div class="media-body">
+    <h2>
+      <a class="article-title" href="{{ url_for('learning_style') }}"
+        >Learning Style Test</a
+      >
+    </h2>
+    <p class="article-content">Test</p>
+  </div>
+</article>
 
-  {% endif %}
-</div>
+<article class="media content-section">
+  <div class="media-body">
+    <h2>
+      <a class="article-title" href="{{ url_for('content') }}">Content</a>
+    </h2>
+    <p class="article-content"></p>
+  </div>
+</article>
+
 {% endblock %}
