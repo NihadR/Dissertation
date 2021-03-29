@@ -1,12 +1,14 @@
 from flask import render_template, flash, redirect, url_for, request
-from dissertation import app, db, bcrypt
-from dissertation.forms import RegistrationForm, LoginForm, UpdateAccForm, AdminLoginForm, TopicForm
+from dissertation import app, db, bcrypt, mail
+from dissertation.forms import (RegistrationForm, LoginForm, UpdateAccForm, AdminLoginForm,
+                                TopicForm, RequestResetForm, ResetPasswordForm)
 from dissertation.models import User, Topic, BNModel, Course, Admin
 from flask_login import login_user, current_user, logout_user, login_required
 from collections import Counter
 from statistics import mode
 from dissertation.testquestions import questions, lsquestions, lsquestions3
 from dissertation.algorithm import runmodel, predictmodel
+from flask_mail import Message
 import pandas as pd
 import json
 import time
@@ -20,7 +22,7 @@ var = 0
 @app.route('/')
 @app.route('/home')
 def home():
-    # runmodel()
+    runmodel()
     return render_template('home.html')
 
 
@@ -38,7 +40,7 @@ def register():
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
         user = User(username=form.username.data,
-                    email=form.email.data, password=hashed_password, test_taken=False, pretest_result=0)
+                    email=form.email.data, password=hashed_password, test_taken=False, pretest_result=0, is_admin=False)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created', 'success')
@@ -308,12 +310,11 @@ def gen_task_list(weaknesses):
 
 
 def get_course():
-    checkCourse = Course.query.all()
+    course = Course.query.filter_by(user_id=current_user.id).first()
     questions = []
-    if not checkCourse:
+    if not course:
         return questions
     else:
-        course = Course.query.filter_by(user_id=current_user.id).first()
         strtask = course.task_list
         x = ast.literal_eval(strtask)
         task = []
@@ -348,8 +349,8 @@ def content():
         testanswers = []
         for i in questions:
             print(i)
-            print('id', request.form[i.get('id')])
             print('answer', i.get('answer'))
+            print('id', request.form[i.get('id')])
             if request.form[i.get('id')] == i.get('answer'):
                 testanswers.append(1)
                 testanswers.append(i['question_type'])
@@ -425,23 +426,37 @@ def content_analysis(df, list, length):
     print("weaknesses", weaknesses)
     print('Users', current_user.strengths)
     print('UsersW', current_user.weaknesses)
-    if not current_user.strengths:
-        current_user.strengths = strengths
+    if not strengths:
+        current_user.strengths = ''.join(strengths)
+        print('ifstatementsadnasdpasd', current_user.strengths)
+    elif not current_user.strengths:
+        current_user.strengths = current_user.strengths.join(strengths)
+        print('ifstatementsadnasdpasd', current_user.strengths)
     else:
         current_strengths = current_user.strengths
         cs = ast.literal_eval(current_strengths)
         print('hi', cs)
         print('type', type(cs))
-        temp = [item for item in strengths if item not in cs]
+        temp = [item for item in strengths if item not in current_strengths]
         temp2 = current_strengths + temp
         stren = ''.join(temp2)
         current_user.strengths = stren
+        print('asdknaspdaspdkasp', current_user.strengths)
     weak = ''.join(weaknesses)
-    tasklist = gen_task_list(weaknesses)
-    course = Course(student_id=current_user, task_list=str(tasklist))
-    current_user.weaknesses = weak
-    db.session.add(course)
-    db.session.commit()
+
+    if not weaknesses:
+        course = Course(student_id=current_user, task_list=str(tasklist))
+        current_user.weaknesses = weak
+        db.session.add(course)
+        db.session.commit()
+        print('hi', current_user.strengths)
+    else:
+        tasklist = gen_task_list(weaknesses)
+        course = Course(student_id=current_user, task_list=str(tasklist))
+        current_user.weaknesses = weak
+        db.session.add(course)
+        db.session.commit()
+        print('hihihihihihi', current_user.strengths)
 
 # strengths is '[]' remove the string to get the list and loop through and update
 
@@ -449,3 +464,48 @@ def content_analysis(df, list, length):
 @app.route('/compiler')
 def compiler():
     return render_template('ide.html')
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Reqest', 
+            sender='noreply@demo.com', 
+            recipients=[user.email])
+    msg.body = f''' To reset your password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+
+If you did not make this request, ignore this email.
+'''
+    mail.send(msg)
+
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
+    return render_template('reset_request.html', form=form, title="Reset Password")
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if not user:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(
+            form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash('Your password has been reset', 'success')
+        return redirect(url_for('login'))
+    return render_template('reset_token.html', form=form, title="Reset Password")

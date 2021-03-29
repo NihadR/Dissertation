@@ -36,6 +36,8 @@ add something to homepage DONE
 do dashboard button points DONE
 
 do is_admin and make sure pages have correct accesss
+pages have been altered, recreate database and test DONE (remember to change back to true)
+Perhaps change to 403 error page
 
 check strengths to see if it is being added
 

@@ -1,4 +1,5 @@
-from dissertation import db, login_manager
+from dissertation import db, login_manager, app
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 from flask_login import UserMixin
 
@@ -20,9 +21,22 @@ class User(db.Model, UserMixin):
     learning_style = db.Column(db.String(20), nullable=True)
     strengths = db.Column(db.String(60), nullable=True)
     weaknesses = db.Column(db.String(60), nullable=True)
-    # is_admin = db.Column(db.Boolean, unique=False, default=False)
+    is_admin = db.Column(db.Boolean, unique=False, default=False)
     courses = db.relationship('Course', backref='student_id', lazy=True)
     bnmodels = db.relationship('BNModel', backref='student_id', lazy=True)
+
+    def get_reset_token(self, expires_sec=1800):
+        s = Serializer(app.config['SECRET_KEY'], expires_sec)
+        return s.dumps({'user_id': self.id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            user_id = s.loads(token)['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
 
     def __repr__(self):
         return f"User('{self.id}', '{self.username}', '{self.email}', '{self.test_taken}', '{self.pretest_result}' , '{self.learning_style_test_taken}', '{self.learning_style}', '{self.strengths}', '{self.weaknesses}')"

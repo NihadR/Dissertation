@@ -1,4 +1,5 @@
-{% extends "template.html" %} {% block content %}
+{% extends "template.html" %} {% block content %} {% if current_user.is_admin ==
+False %}
 <div class="content-section">
   <form method="POST" action="">
     {{ form.hidden_tag() }}
@@ -34,4 +35,10 @@
     <input type="submit" value="Create Task" />
   </form>
 </div>
-{% endblock content %}
+{% else %}
+
+<div class="content-section">
+  <h3>You do not have permission for this page.</h3>
+</div>
+
+{% endif %} {% endblock content %}

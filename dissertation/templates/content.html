@@ -9,7 +9,7 @@
       {% for i in q %}
       <li>{{ i.title }}</li>
       <li hidden>{{ i.question_type }}</li>
-      {% for key in i.content %}
+      {% for key in i.content.keys() %}
       <pre
         class="prettyprint"
       ><input type="radio" id="{{ key }}" name="{{ i.id }}" value="{{ key }}" required> {{ i.content[key] }}</pre>
