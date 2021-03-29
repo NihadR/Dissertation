@@ -1,5 +1,4 @@
-{% extends "template.html" %} {% block content %} {% if current_user.is_admin ==
-False %}
+{% extends "template.html" %} {% block content %} 
 <article class="media content-section">
   <div class="media-body">
     <div class="article-metadata">
@@ -15,10 +14,4 @@ False %}
 
   </div>
 </article>
-{% else %}
-
-<div class="content-section">
-  <h3>You do not have permission for this page.</h3>
-</div>
-
-{% endif %} {% endblock content %}
+{% endblock content %}
