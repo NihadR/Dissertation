@@ -1,6 +1,6 @@
-from dissertation import app
+from dissertation import create_app
 
+app = create_app()
 
 if __name__ == '__main':
-
     app.run(debug=False, use_reloader=False)

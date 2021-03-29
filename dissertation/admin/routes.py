@@ -57,7 +57,7 @@ def update_topic(topic_id):
         form.content.data = topic.content
         form.answer.data = topic.answer
         form.description.data = topic.description
-    return render_template('admin/create_task.html', title='Update Task', form=form)
+    return render_template('admin/update_task.html', title='Update Task', form=form)
 
 
 

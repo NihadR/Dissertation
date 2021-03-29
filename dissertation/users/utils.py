@@ -1,5 +1,5 @@
 from flask_mail import Message
-from dissertation import app, mail, db
+from dissertation import  mail, db
 from flask import url_for
 from dissertation.models import User, Topic, Course
 from flask_login import current_user

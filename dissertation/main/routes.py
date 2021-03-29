@@ -7,7 +7,7 @@ main = Blueprint('main', __name__)
 @main.route('/')
 @main.route('/home')
 def home():
-    runmodel()
+    # runmodel()
     return render_template('main/home.html')
 
 

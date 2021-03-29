@@ -4,11 +4,15 @@ False %}
   <div class="media-body">
     <div class="article-metadata">
       <a class="mr-2">{{ topic.title }}</a>
+      <div>
+        <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('admin.update_topic', topic_id=topic.id) }}">Update</a>
+      </div>
     </div>
     <h2 class="article-title">
       {{ topic.question_type }}
     </h2>
     <p class="article-content">{{ topic.description }}</p>
+
   </div>
 </article>
 {% else %}
