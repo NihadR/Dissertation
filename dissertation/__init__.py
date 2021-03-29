@@ -25,9 +25,11 @@ def create_app(config_class=Config):
     from dissertation.users.routes import users
     from dissertation.admin.routes import admin
     from dissertation.main.routes import main
+    from dissertation.errors.handlers import errors
 
     app.register_blueprint(users)
     app.register_blueprint(admin)
     app.register_blueprint(main)
+    app.register_blueprint(errors)
 
     return app
