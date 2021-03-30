@@ -3,15 +3,11 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextA
 from wtforms.validators import DataRequired, Email
 
 
-
-class AdminLoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember = BooleanField('Remember Me')
-    submit = SubmitField('Login')
-
-
 class TopicForm(FlaskForm):
+    '''
+    Topic form for creating or updating a task
+    Validates the inputted data
+    '''
     title = StringField('Title', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
