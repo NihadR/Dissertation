@@ -14,6 +14,9 @@ login_manager.login_message_category = 'info'
 mail = Mail()
 
 def create_app(config_class=Config):
+    '''
+    Initialises the entire app 
+    '''
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -22,6 +25,8 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     mail.init_app(app)
 
+    # Registers the different blueprints created for the 
+    # mini packages in the system
     from dissertation.users.routes import users
     from dissertation.admin.routes import admin
     from dissertation.main.routes import main

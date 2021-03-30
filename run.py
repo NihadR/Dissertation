@@ -1,5 +1,8 @@
 from dissertation import create_app
 
+'''
+Runs the app
+'''
 app = create_app()
 
 if __name__ == '__main':
