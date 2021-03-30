@@ -8,14 +8,20 @@ import random
 import json
 
 def gen_task_list(weaknesses):
+    '''
+    Takes a list of weaknesses and loops through them returning all tasks of that question_type
+    Then randomly selects a task id and returns it in a task list 
+    '''
     tasklist = []
     for i in weaknesses:
         task = Topic.query.filter_by(question_type=i).all()
         length = len(task)
+        # Checks whether the amount of tasks is one if so returns that
         if length == 1:
             taskid = task[0]
             tasklist.append(taskid.id)
         else:
+        # Takes a random task from the returned tasks from the list
             rand = random.randint(1, length)
             taskid = task[rand-1]
             tasklist.append(taskid.id)
@@ -23,30 +29,34 @@ def gen_task_list(weaknesses):
 
 
 def pretest_analysis(df):
+    '''
+    Takes a dataframe with the user results from the pretest and analyses by checking whether
+    the state prediction is greater than 0.8 
+    '''
     statement = df['state_predictions'].iloc[0]
     ifstatement = df['state_predictions'].iloc[1]
     forloop = df['state_predictions'].iloc[2]
     strengths = []
     weaknesses = []
-    if statement < 0.55:
+    if statement < 0.8:
         weaknesses.append('statement')
     else:
         strengths.append('statement')
-    if ifstatement < 0.55:
+    if ifstatement < 0.8:
         weaknesses.append('ifstatement')
     else:
         strengths.append('ifstatement')
-    if forloop < 0.55:
+    if forloop < 0.8:
         weaknesses.append('forloop')
     else:
         strengths.append('forloop')
-    print(type(weaknesses))
+    # Converts the list to a string for database input 
     stren = ''.join(strengths)
     weak = ''.join(weaknesses)
-    print('weaaaaaaaaaaak', weak)
-    print(type(weak))
+    # Generates a task list and creates a course for the student 
     tasklist = gen_task_list(weaknesses)
     course = Course(student_id=current_user, task_list=str(tasklist))
+    # Updates the users strengths and wekanesses
     current_user.strengths = stren
     current_user.weaknesses = weak
     db.session.add(course)
@@ -56,12 +66,17 @@ def pretest_analysis(df):
 
 
 def get_course():
+    '''
+    Gets the course from the database and finds the related topics, constructes it in a dictionary
+    format and returns in a list
+    '''
     course = Course.query.filter_by(user_id=current_user.id).first()
     print(course)
     questions = []
     if not course:
         return questions
     else:
+        # ast is used to remove the surrounding string 
         strtask = course.task_list
         x = ast.literal_eval(strtask)
         task = []
@@ -70,6 +85,7 @@ def get_course():
             task.append(t)
 
         for i in task:
+            # Goes through each task and creates a dictionary under the relevant keys
             dic = {}
             dic['id'] = str(i.id)
             dic['title'] = i.title
@@ -84,6 +100,12 @@ def get_course():
     return questions
 
 def content_analysis(df, list, length):
+    '''
+    Gets the answers from the user and generates a new course, if needed, for them
+    Checks the state predictions and appends to a new list and then updates the 
+    users strengths and weaknesses as well as generating the new relevant informaiton
+    such as course
+    '''
     statement = df['state_predictions'].iloc[0]
     all_types = ['statement', 'ifstatement', 'forloop']
     val = length/2
@@ -92,6 +114,7 @@ def content_analysis(df, list, length):
     course = Course.query.filter_by(user_id=current_user.id).first()
     db.session.delete(course)
     db.session.commit()
+    # Checks the length of the list that was passed through to know how many questions the user answered 
     if val == 1:
         state = (list[1], df['state_predictions'].iloc[0])
         if state[1] < 0.55:
@@ -131,6 +154,8 @@ def content_analysis(df, list, length):
     print('wektype', type(weaknesses))
     print(weaknesses)
     # new_stren = list(set(all_types) - set(weaknesses))
+
+    # Checks against the original questions to see what strengths the user has
     new_stren = [item for item in all_types if item not in weaknesses]
     current_user.strengths = ''.join(new_stren)
 
@@ -150,7 +175,7 @@ def content_analysis(df, list, length):
     #     current_user.strengths = stren
     #     print('asdknaspdaspdkasp', current_user.strengths)
     weak = ''.join(weaknesses)
-
+    # Checks whether the weaknesses is empty if so a new tasklist is not needed 
     if not weaknesses:
         course = Course(student_id=current_user, task_list='')
         current_user.weaknesses = weak
@@ -168,6 +193,10 @@ def content_analysis(df, list, length):
     # strengths is '[]' remove the string to get the list and loop through and update
 
 def send_reset_email(user):
+    '''
+    Takes a parameter of the user object 
+    Constructs the msg with the unique link and send the email to the user
+    '''
     token = user.get_reset_token()
     msg = Message('Password Reset Reqest', 
             sender='noreply@demo.com', 

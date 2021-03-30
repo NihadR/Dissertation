@@ -26,6 +26,8 @@ def register():
         return redirect(url_for('main.home'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        # Takes the submitted data and hashes the password and creates a new user with the remaing data
+        # Commits to the database
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
         user = User(username=form.username.data,
@@ -51,6 +53,7 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
+            # Calls the login function and passes through the user to the flask login 
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             flash('Login Successful', 'success')
@@ -76,12 +79,14 @@ def account():
     '''
     form = UpdateAccForm()
     if form.validate_on_submit():
+        # Gets the updated user details from the form and updates the database
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Account information has been updated', 'success')
         return redirect(url_for('users.account'))
     elif request.method == 'GET':
+        # Displays current user information on the page 
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('user/account.html', title='acount', form=form)
@@ -107,6 +112,8 @@ def learning_style():
     questions3 = lsquestions3
     if request.method == 'POST':
         learningstyle = []
+        # Gets the keys from the dictionary and compares to the answered questions to check
+        # which response and has given and appends to a new list
         for i in lsquestions.keys():
             answered = request.form[i]
             if lsquestions[i][0] == answered:
@@ -126,6 +133,7 @@ def learning_style():
                 learningstyle.append('C')
             else:
                 learningstyle.append('D')
+        # Mode is taken to return the learning style
         ans = mode(learningstyle)
         style = ''
         if ans == 'A':
@@ -137,6 +145,7 @@ def learning_style():
         else:
             style = 'Kinesthesis'
 
+        # User information is updated
         current_user.learning_style = style
         current_user.learning_style_test_taken = True
         db.session.commit()
@@ -281,6 +290,7 @@ def reset_request():
         return redirect(url_for('main.home'))
     form = RequestResetForm()
     if form.validate_on_submit():
+        # Finds the user's account and calls the function to send the password request
         user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
         flash('An email has been sent with instructions to reset your password.', 'info')
@@ -302,6 +312,7 @@ def reset_token(token):
         return redirect(url_for('users.reset_request'))
     form = ResetPasswordForm()
     if form.validate_on_submit():
+        # Takes the new password and hashes it, commits it to the database
         hashed_password = bcrypt.generate_password_hash(
             form.password.data).decode('utf-8')
         user.password = hashed_password

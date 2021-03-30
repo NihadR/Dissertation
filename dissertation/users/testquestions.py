@@ -1,3 +1,5 @@
+
+# Pretest questions 
 questions = [
     {'id': '1',
      'question': 'Create a statement price which is equal to 10 and another statement called money which is equal to 15. Using these two statements work out the money left after buying the product.',
@@ -147,6 +149,7 @@ questions = [
 ]
 
 
+# Questions to find learning style 
 lsquestions = {
     'How do you best revise?': ['Through the use of diagrams', 'Through the use of videos and lectures',
                                 'Through notes and reading material', 'Through participating in practicals'],
