@@ -16,14 +16,7 @@ from dissertation.models import User
 User.query.first()
 
 1. To create superadmin
-   from dissertation import db
-   from dissertation.models import Admin
-   from flask_bcrypt import Bcrypt
-   bcrypt = Bcrypt()
-   hashed_password = bcrypt.generate_password_hash('testing').decode('utf-8')
-   admin = Admin(email = 'nihad1999@hotmail.co.uk', password = hashed_password)
-   db.session.add(admin)
-   db.session.commit()
+   change user creation is_admin == True
 
 Stuff to do
 
@@ -32,7 +25,7 @@ fix key error bug on content page
 do the about page content, look into compiler if not then do online ide DONE
 
 add something to homepage DONE
-
+dissertation/models.py
 do dashboard button points DONE
 
 do is_admin and make sure pages have correct accesss
@@ -42,3 +35,11 @@ Perhaps change to 403 error page
 check strengths to see if it is being added
 
 REFACTOR DONE
+
+Comments
+
+Testing
+
+from dissertation import db, create_app
+db.create_all(app=create_app()) or
+db.drop_all(app=create_app())

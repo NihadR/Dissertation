@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request, Blueprint
+from flask import render_template, flash, redirect, url_for, request, Blueprint, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from dissertation import db, bcrypt
 from dissertation.algorithm import predictmodel
@@ -17,6 +17,11 @@ users = Blueprint('users', __name__)
 var = 0
 @users.route('/register', methods=['GET', 'POST'])
 def register():
+    '''
+    Allows a user to register to the website
+    Takes form input and creates a new user adding them to the database 
+    Redirects them to the login page
+    '''
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistrationForm()
@@ -34,6 +39,12 @@ def register():
 
 @users.route('/login', methods=['GET', 'POST'])
 def login():
+    '''
+    Allows a user to login into the system 
+    Takes email and password input and checks whether they exist in the system
+    Uses the login_user function to login them in 
+    Redirects them to the dashboard if successful
+    '''
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = LoginForm()
@@ -50,12 +61,19 @@ def login():
 
 @users.route('/logout')
 def logout():
+    '''
+    Logs a user out of the system
+    '''
     logout_user()
     return redirect(url_for('main.home'))
 
 @users.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
+    '''
+    Allows a user to view their username and email and update them if needed
+    Updates these values if valid and commits the changes to the database
+    '''
     form = UpdateAccForm()
     if form.validate_on_submit():
         current_user.username = form.username.data
@@ -72,17 +90,19 @@ def account():
 @users.route('/dashboard')
 @login_required
 def dashboard():
+    '''
+    Route to act as a home page for all further actions by the user 
+    '''
     return render_template('user/dashboard.html')
-
-
-@users.route('/test', methods=['GET', 'POST'])
-@login_required
-def take_test():
-    return render_template('user/test.html', title='Pretest')
 
 @users.route('/learning_style', methods=['GET', 'POST'])
 @login_required
 def learning_style():
+    '''
+    Takes user answers to input through POST request, checks the given answers which are mapped to 
+    pre-defined learning styles and total the different types, taking the mode
+    Update the users account and redirect them to the account page
+    '''
     questions = lsquestions
     questions3 = lsquestions3
     if request.method == 'POST':
@@ -107,7 +127,6 @@ def learning_style():
             else:
                 learningstyle.append('D')
         ans = mode(learningstyle)
-        print(learningstyle)
         style = ''
         if ans == 'A':
             style = 'Visual'
@@ -130,6 +149,11 @@ def learning_style():
 @users.route('/pretest', methods=['GET', 'POST'])
 @login_required
 def pretest():
+    '''
+    Creates the route with the question dictionary passed through to the template
+    User input is taken and keys are matched with answers to calculate the user's score
+    Transformed into a datafram and fed into the model 
+    '''
     question = questions
     global var
     if var == 0:
@@ -137,18 +161,23 @@ def pretest():
 
     if request.method == 'POST':
         endtime = datetime.now()
-
+        
         testanswers = []
         for i in question:
+            # Gets the keys from the form and match them with correct answer
             if request.form[i.get('id')] == i.get('correct'):
                 testanswers.append(1)
             else:
                 testanswers.append(0)
+        # Convert list to json to be stored in the database 
+        # 
         ans = json.dumps(testanswers)
         current_user.test_taken = True
         current_user.pretest_result = ans
         db.session.commit()
         state, ifstate, forl = 0, 0, 0
+        # Multiple questions regarding each topic so take either 1 or 0 depending
+        # if they get both right
         if (testanswers[0] + testanswers[5])/2 == 1:
             state = 1
         if (testanswers[1] + testanswers[3])/2 == 1:
@@ -162,10 +191,13 @@ def pretest():
         #                    'hints': [0, 0, 0], 'attempts': [1, 1, 1],
         #                    'start_time': [var, var, var],
         #                    'end_time': [endtime, endtime, endtime]})
+
+        # Creates the dataframe with the information processed above
         df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
                            'skill_name': ['statement', 'ifstatement', 'forloop'],
                            'correct': [state, ifstate, forl]})
-        print(df)
+        # Calls the predict function on the dataframe to get the state prediction
+        # Passes this through the dataframe to the pretest_analysis function
         pred = predictmodel(df)
         pretest_analysis(pred)
         return redirect(url_for('main.home'))
@@ -173,49 +205,78 @@ def pretest():
 
 @users.route('/content', methods=['GET', 'POST'])
 def content():
+    '''
+    Displays the precribed tasks to the student and takes the input and analysis it
+
+    Returns the user to the dashboard
+    '''
     questions = get_course()
     global var
     if var == 0:
         var = datetime.now()
-
     if request.method == 'POST':
         endtime = datetime.now()
         testanswers = []
+
+        # enumerated keys are processed to prevent keyerrors from dictionary 
+        # checks whether the correct answer has been given and appends accordingly 
         for i in questions:
-            print(i)
-            print('answer', i.get('answer'))
-            print('id', request.form[i.get('id')])
-            if request.form[i.get('id')] == i.get('answer'):
+            k = f"""{i.get('id')}"""
+            new_key = request.form[k]
+            if new_key == i.get('answer'):
                 testanswers.append(1)
                 testanswers.append(i['question_type'])
             else:
                 testanswers.append(0)
                 testanswers.append(i['question_type'])
+
         length = len(testanswers)
-        print(testanswers)
+        # df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
+        #                    'skill_name': ['statement', 'ifstatement', 'forloop'],
+        #                    'correct': [state, ifstate, forl],
+        #                    'hints': [0, 0, 0], 'attempts': [1, 1, 1],
+        #                    'start_time': [starttime, starttime, starttime],
+        #                    'end_time': [endtime, endtime, endtime]})
+    
+        # Creates appropriate length dictionary according to the amount of questions the user was given
         if length/2 == 1:
             df = pd.DataFrame({'user_id': [current_user.id],
                                'skill_name': [testanswers[1]],
-                               'correct': [testanswers[0]]})
+                               'correct': [testanswers[0]], 
+                               'start_time': [var],
+                               'end_time': [endtime]})
         elif length/2 == 2:
             df = pd.DataFrame({'user_id': [current_user.id, current_user.id],
                                'skill_name': [testanswers[1], testanswers[3]],
-                               'correct': [testanswers[0], testanswers[2]]})
+                               'correct': [testanswers[0], testanswers[2]],
+                                'start_time': [var, var],
+                               'end_time': [endtime, endtime]})
         else:
             df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
                                'skill_name': [testanswers[1], testanswers[3], testanswers[5]],
-                               'correct': [testanswers[0], testanswers[2], testanswers[4]]})
+                               'correct': [testanswers[0], testanswers[2], testanswers[4]],
+                                'start_time': [var, var, var],
+                               'end_time': [endtime, endtime, endtime]})
+        # Calls predict function on the dataframe and passes the output to the be analysed further
         pred = predictmodel(df)
         print('content', pred)
         content_analysis(pred, testanswers, length)
-    return render_template('user/content.html', q=questions)
+        return redirect(url_for('users.dashboard'))
+    return render_template('user/content.html', q=questions, enumerate=enumerate)
 
 @users.route('/compiler')
 def compiler():
+    '''
+    Built-in IDE for the user to use 
+    '''
     return render_template('user/ide.html')
 
 @users.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():
+    '''
+    Checks whether inputs are valid and finds passes through the users email to the method 
+    to generate password request 
+    '''
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RequestResetForm()
@@ -229,6 +290,10 @@ def reset_request():
 
 @users.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_token(token):
+    '''
+    Route with the token for user to reset passed, checks whether token is still valid
+    Allows user to then reset the password and commits the changes to the database 
+    '''
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     user = User.verify_reset_token(token)

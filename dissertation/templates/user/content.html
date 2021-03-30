@@ -6,13 +6,14 @@
 <div class="content-section">
   <form action="" method="POST">
     <ol>
-      {% for i in q %}
+      {% for question_number, i in enumerate(q) %}
       <li>{{ i.title }}</li>
       <li hidden>{{ i.question_type }}</li>
       {% for key in i.content.keys() %}
+      {% set new_key = question_number ~ '-' ~ key %}
       <pre
         class="prettyprint"
-      ><input type="radio" id="{{ key }}" name="{{ i.id }}" value="{{ key }}" required> {{ i.content[key] }}</pre>
+      ><input type="radio" id="{{ new_key }}" name="{{ i.id }}" value="{{ key }}" required> {{ i.content[key] }}</pre>
       <br />
       {% endfor %} {% endfor %}
     </ol>

@@ -12,8 +12,8 @@ admin = Blueprint('admin', __name__)
 @login_required
 def createtask():
     form = TopicForm()
-    if current_user.is_admin == False:
-        abort(403)
+    # if current_user.is_admin == False:
+    #     abort(403)
     if form.validate_on_submit():
         option = request.form.get('options')
         random_string = f'''{form.content.data}'''
@@ -30,8 +30,8 @@ def createtask():
 @admin.route('/view_topics')
 @login_required
 def view_topics():
-    if current_user.is_admin == False:
-        abort(403)
+    # if current_user.is_admin == False:
+    #     abort(403)
     topics = Topic.query.all()
     return render_template('admin/view_topics.html', topics=topics)
 
@@ -39,8 +39,8 @@ def view_topics():
 @admin.route('/view_topics/<int:topic_id>')
 @login_required
 def topic(topic_id):
-    if current_user.is_admin == False:
-        abort(403)
+    # if current_user.is_admin == False:
+    #     abort(403)
     topic = Topic.query.get_or_404(topic_id)
     return render_template('admin/topic.html', title=topic.title, topic=topic)
 
@@ -48,8 +48,8 @@ def topic(topic_id):
 @admin.route('/view_topics/<int:topic_id>/update', methods=['GET', 'POST'])
 @login_required
 def update_topic(topic_id):
-    if current_user.is_admin == False:
-        abort(403)
+    # if current_user.is_admin == False:
+    #     abort(403)
     topic = Topic.query.get_or_404(topic_id)
     form = TopicForm()
     if form.validate_on_submit():
@@ -68,14 +68,11 @@ def update_topic(topic_id):
     return render_template('admin/update_task.html', title='Update Task', form=form)
 
 
-
-
-
 @admin.route('/admin_dashboard', methods=['GET', 'POST'])
 @login_required
 def admin_dashboard():
-    if current_user.is_admin == False:
-        abort(403)
+    # if current_user.is_admin == False:
+    #     abort(403)
     return render_template('admin/admin_dashboard.html', title='Admin')
 
 

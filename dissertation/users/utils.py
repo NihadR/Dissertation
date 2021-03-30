@@ -7,34 +7,6 @@ import ast
 import random
 import json
 
-def pretest_analysis(df):
-    statement = df['state_predictions'].iloc[0]
-    ifstatement = df['state_predictions'].iloc[1]
-    forloop = df['state_predictions'].iloc[2]
-    strengths = []
-    weaknesses = []
-    if statement < 0.8:
-        weaknesses.append('statement')
-    else:
-        strengths.append('statement')
-    if ifstatement < 0.8:
-        weaknesses.append('ifstatement')
-    else:
-        strengths.append('ifstatement')
-    if forloop < 0.8:
-        weaknesses.append('forloop')
-    else:
-        strengths.append('forloop')
-    stren = ''.join(strengths)
-    weak = ''.join(weaknesses)
-    tasklist = gen_task_list(weaknesses)
-    course = Course(student_id=current_user, task_list=str(tasklist))
-    current_user.strengths = stren
-    current_user.weaknesses = weak
-    db.session.add(course)
-    db.session.commit()
-
-
 def gen_task_list(weaknesses):
     tasklist = []
     for i in weaknesses:
@@ -50,8 +22,42 @@ def gen_task_list(weaknesses):
     return tasklist
 
 
+def pretest_analysis(df):
+    statement = df['state_predictions'].iloc[0]
+    ifstatement = df['state_predictions'].iloc[1]
+    forloop = df['state_predictions'].iloc[2]
+    strengths = []
+    weaknesses = []
+    if statement < 0.55:
+        weaknesses.append('statement')
+    else:
+        strengths.append('statement')
+    if ifstatement < 0.55:
+        weaknesses.append('ifstatement')
+    else:
+        strengths.append('ifstatement')
+    if forloop < 0.55:
+        weaknesses.append('forloop')
+    else:
+        strengths.append('forloop')
+    print(type(weaknesses))
+    stren = ''.join(strengths)
+    weak = ''.join(weaknesses)
+    print('weaaaaaaaaaaak', weak)
+    print(type(weak))
+    tasklist = gen_task_list(weaknesses)
+    course = Course(student_id=current_user, task_list=str(tasklist))
+    current_user.strengths = stren
+    current_user.weaknesses = weak
+    db.session.add(course)
+    db.session.commit()
+
+
+
+
 def get_course():
     course = Course.query.filter_by(user_id=current_user.id).first()
+    print(course)
     questions = []
     if not course:
         return questions
@@ -79,7 +85,7 @@ def get_course():
 
 def content_analysis(df, list, length):
     statement = df['state_predictions'].iloc[0]
-
+    all_types = ['statement', 'ifstatement', 'forloop']
     val = length/2
     strengths = []
     weaknesses = []
@@ -88,7 +94,7 @@ def content_analysis(df, list, length):
     db.session.commit()
     if val == 1:
         state = (list[1], df['state_predictions'].iloc[0])
-        if state[1] < 0.8:
+        if state[1] < 0.55:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
@@ -96,11 +102,11 @@ def content_analysis(df, list, length):
         ifstatement = df['state_predictions'].iloc[1]
         state = (list[1], df['state_predictions'].iloc[0])
         state1 = (list[3], df['state_predictions'].iloc[1])
-        if state[1] < 0.8:
+        if state[1] < 0.55:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
-        if state1[1] < 0.8:
+        if state1[1] < 0.55:
             weaknesses.append(state1[0])
         else:
             strengths.append(state1[0])
@@ -110,48 +116,50 @@ def content_analysis(df, list, length):
         state = (list[1], df['state_predictions'].iloc[0])
         state1 = (list[3], df['state_predictions'].iloc[1])
         state2 = (list[5], df['state_predictions'].iloc[1])
-        if state[1] < 0.8:
+        if state[1] < 0.55:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
-        if state1[1] < 0.8:
+        if state1[1] < 0.55:
             weaknesses.append(state1[0])
         else:
             strengths.append(state1[0])
-        if state2[1] < 0.8:
+        if state2[1] < 0.55:
             weaknesses.append(state2[0])
         else:
             strengths.append(state2[0])
-    print("strengths", strengths)
-    print("weaknesses", weaknesses)
-    print('Users', current_user.strengths)
-    print('UsersW', current_user.weaknesses)
-    if not strengths:
-        current_user.strengths = ''.join(strengths)
-        print('ifstatementsadnasdpasd', current_user.strengths)
-    elif not current_user.strengths:
-        current_user.strengths = current_user.strengths.join(strengths)
-        print('ifstatementsadnasdpasd', current_user.strengths)
-    else:
-        current_strengths = current_user.strengths
-        cs = ast.literal_eval(current_strengths)
-        print('hi', cs)
-        print('type', type(cs))
-        temp = [item for item in strengths if item not in current_strengths]
-        temp2 = current_strengths + temp
-        stren = ''.join(temp2)
-        current_user.strengths = stren
-        print('asdknaspdaspdkasp', current_user.strengths)
+    print('wektype', type(weaknesses))
+    print(weaknesses)
+    # new_stren = list(set(all_types) - set(weaknesses))
+    new_stren = [item for item in all_types if item not in weaknesses]
+    current_user.strengths = ''.join(new_stren)
+
+    # if not strengths:
+    #     pass
+    # elif not current_user.strengths:
+    #     current_user.strengths = current_user.strengths.join(strengths)
+    #     print('ifstatementsadnasdpasd', current_user.strengths)
+    # else:
+    #     current_strengths = current_user.strengths
+    #     cs = ast.literal_eval(current_strengths)
+    #     print('hi', cs)
+    #     print('type', type(cs))
+    #     temp = [item for item in strengths if item not in current_strengths]
+    #     temp2 = current_strengths + temp
+    #     stren = ''.join(temp2)
+    #     current_user.strengths = stren
+    #     print('asdknaspdaspdkasp', current_user.strengths)
     weak = ''.join(weaknesses)
 
     if not weaknesses:
-        course = Course(student_id=current_user, task_list=str(tasklist))
+        course = Course(student_id=current_user, task_list='')
         current_user.weaknesses = weak
         db.session.add(course)
         db.session.commit()
         print('hi', current_user.strengths)
     else:
         tasklist = gen_task_list(weaknesses)
+        print(tasklist)
         course = Course(student_id=current_user, task_list=str(tasklist))
         current_user.weaknesses = weak
         db.session.add(course)
