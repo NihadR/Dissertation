@@ -3,6 +3,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from dissertation import db, bcrypt
 from dissertation.algorithm import predictmodel
 from dissertation.users.testquestions import questions, lsquestions, lsquestions3
+from dissertation.users.info import infor
 from dissertation.users.forms import RegistrationForm, LoginForm, UpdateAccForm, RequestResetForm, ResetPasswordForm
 from dissertation.models import User, Topic, Course
 from dissertation.users.utils import pretest_analysis, gen_task_list,get_course,content_analysis,send_reset_email
@@ -98,6 +99,10 @@ def dashboard():
     '''
     Route to act as a home page for all further actions by the user 
     '''
+    print(current_user.strengths)
+    print(type(current_user.strengths))
+    print(current_user.weaknesses)
+    print(type(current_user.weaknesses))
     return render_template('user/dashboard.html')
 
 @users.route('/learning_style', methods=['GET', 'POST'])
@@ -194,17 +199,14 @@ def pretest():
         if (testanswers[2] + testanswers[4])/2 == 1:
             forl = 1
 
-        # df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
-        #                    'skill_name': ['statement', 'ifstatement', 'forloop'],
-        #                    'correct': [state, ifstate, forl],
-        #                    'hints': [0, 0, 0], 'attempts': [1, 1, 1],
-        #                    'start_time': [var, var, var],
-        #                    'end_time': [endtime, endtime, endtime]})
 
         # Creates the dataframe with the information processed above
         df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
                            'skill_name': ['statement', 'ifstatement', 'forloop'],
-                           'correct': [state, ifstate, forl]})
+                           'correct': [state, ifstate, forl],
+                           'start_time': [var, var, var],
+                           'end_time': [endtime, endtime, endtime]})
+
         # Calls the predict function on the dataframe to get the state prediction
         # Passes this through the dataframe to the pretest_analysis function
         pred = predictmodel(df)
@@ -240,12 +242,6 @@ def content():
                 testanswers.append(i['question_type'])
 
         length = len(testanswers)
-        # df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
-        #                    'skill_name': ['statement', 'ifstatement', 'forloop'],
-        #                    'correct': [state, ifstate, forl],
-        #                    'hints': [0, 0, 0], 'attempts': [1, 1, 1],
-        #                    'start_time': [starttime, starttime, starttime],
-        #                    'end_time': [endtime, endtime, endtime]})
     
         # Creates appropriate length dictionary according to the amount of questions the user was given
         if length/2 == 1:
@@ -279,6 +275,14 @@ def compiler():
     Built-in IDE for the user to use 
     '''
     return render_template('user/ide.html')
+
+@users.route('/info')
+def info():
+    '''
+    Displays content for the user to understand the topics 
+    '''
+    information = infor
+    return render_template('user/info.html', i = information)
 
 @users.route('/reset_password', methods=['GET', 'POST'])
 def reset_request():

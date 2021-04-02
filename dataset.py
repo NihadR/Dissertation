@@ -16,18 +16,16 @@ def random_date(start, end):
 
 d1 = datetime.strptime('1:30 PM', '%I:%M %p')
 d2 = datetime.strptime('2:10 PM', '%I:%M %p')
-print(random_date(d1, d2))
 
 with open('dataset.csv', 'w', newline='') as f:
     thewriter = csv.writer(f)
 
-    thewriter.writerow(['user_id', 'skill_name', 'correct',
-                        'hints', 'attempts', 'steps', 'start_time', 'end_time'])
+    thewriter.writerow(['row_id','user_id', 'skill_name', 'correct',
+                        'start_time', 'end_time'])
     count = 10000000
 
     for i in range(0, 300000):
         count += 1
-        steps = random.randint(1, 2)
 
         choice = random.randint(0, 1)
         schoice = random.randint(0, 1)
@@ -36,9 +34,25 @@ with open('dataset.csv', 'w', newline='') as f:
         stime = random.randint(30000, 500000)
         xtime = random.randint(30000, 500000)
         endtime = random_date(d1, d2)
-        thewriter.writerow([count, 'statement', choice, 0,
-                            1, steps, '1/1/2021 1:30 PM', endtime])
-        thewriter.writerow([count, 'ifstatement', schoice,
-                            0, 1,  steps, '1/1/2021 1:30 PM', endtime])
-        thewriter.writerow([count, 'forloop', xchoice, 0,
-                            1,  steps, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0, count, 'statement', choice, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'ifstatement', schoice, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'forloop', xchoice,  '1/1/2021 1:30 PM', endtime])
+
+
+# TRAINED PARAMS                               value
+# skill       param   class          
+# statement   prior   default 0.74341
+#             learns  default 1.00000
+#             guesses default 0.13280
+#             slips   default 0.37607
+#             forgets default 0.00000
+# ifstatement prior   default 0.67054
+#             learns  default 1.00000
+#             guesses default 0.22585
+#             slips   default 0.36619
+#             forgets default 0.00000
+# forloop     prior   default 0.83905
+#             learns  default 1.00000
+#             guesses default 0.02186
+#             slips   default 0.40736
+#             forgets default 0.00000

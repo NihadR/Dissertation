@@ -1,0 +1,13 @@
+{% extends "template.html" %} {% block content %}
+
+<div class="content-section">
+      {% for t in i %}
+      <h5>{{ t.get('type') }}</h5>
+        <p>{{ t.info }}</p>
+        <pre class="prettyprint"> <p>{{ t.example }}</p></pre>
+      {% endfor %} 
+
+
+</div>
+
+{% endblock content %}

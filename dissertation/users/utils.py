@@ -71,9 +71,9 @@ def get_course():
     format and returns in a list
     '''
     course = Course.query.filter_by(user_id=current_user.id).first()
-    print(course)
+    print('checking in', course)
     questions = []
-    if not course:
+    if not course.task_list:
         return questions
     else:
         # ast is used to remove the surrounding string 
@@ -139,15 +139,15 @@ def content_analysis(df, list, length):
         state = (list[1], df['state_predictions'].iloc[0])
         state1 = (list[3], df['state_predictions'].iloc[1])
         state2 = (list[5], df['state_predictions'].iloc[1])
-        if state[1] < 0.55:
+        if state[1] < 0.8:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
-        if state1[1] < 0.55:
+        if state1[1] < 0.8:
             weaknesses.append(state1[0])
         else:
             strengths.append(state1[0])
-        if state2[1] < 0.55:
+        if state2[1] < 0.8:
             weaknesses.append(state2[0])
         else:
             strengths.append(state2[0])
