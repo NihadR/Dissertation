@@ -18,6 +18,15 @@
         </select>
       </div>
       <div class="form-group">
+        <label for="task">Choose a learning type:</label>
+        <select name="learning">
+          <option value="Kinesthesis">Kinesthesis</option>
+          <option value="Auditory">Auditory</option>
+          <option value="Visual">Visual</option>
+          <option value="Reading/Writing">Reading/Writing</option>
+        </select>
+      </div>
+      <div class="form-group">
         {{ form.description.label(class="form-control-label") }}
         {{ form.description(class="form-control form-control-lg") }}
       </div>

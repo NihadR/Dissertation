@@ -14,7 +14,8 @@ def gen_task_list(weaknesses):
     '''
     tasklist = []
     for i in weaknesses:
-        task = Topic.query.filter_by(question_type=i).all()
+        task = Topic.query.filter_by(question_type=i, learning_type=current_user.learning_style).all()
+        print(task)
         length = len(task)
         # Checks whether the amount of tasks is one if so returns that
         if length == 1:
@@ -117,7 +118,7 @@ def content_analysis(df, list, length):
     # Checks the length of the list that was passed through to know how many questions the user answered 
     if val == 1:
         state = (list[1], df['state_predictions'].iloc[0])
-        if state[1] < 0.55:
+        if state[1] < 0.8:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
@@ -125,11 +126,11 @@ def content_analysis(df, list, length):
         ifstatement = df['state_predictions'].iloc[1]
         state = (list[1], df['state_predictions'].iloc[0])
         state1 = (list[3], df['state_predictions'].iloc[1])
-        if state[1] < 0.55:
+        if state[1] < 0.8:
             weaknesses.append(state[0])
         else:
             strengths.append(state[0])
-        if state1[1] < 0.55:
+        if state1[1] < 0.8:
             weaknesses.append(state1[0])
         else:
             strengths.append(state1[0])
@@ -151,29 +152,10 @@ def content_analysis(df, list, length):
             weaknesses.append(state2[0])
         else:
             strengths.append(state2[0])
-    print('wektype', type(weaknesses))
-    print(weaknesses)
-    # new_stren = list(set(all_types) - set(weaknesses))
 
     # Checks against the original questions to see what strengths the user has
     new_stren = [item for item in all_types if item not in weaknesses]
     current_user.strengths = str(new_stren)
-
-    # if not strengths:
-    #     pass
-    # elif not current_user.strengths:
-    #     current_user.strengths = current_user.strengths.join(strengths)
-    #     print('ifstatementsadnasdpasd', current_user.strengths)
-    # else:
-    #     current_strengths = current_user.strengths
-    #     cs = ast.literal_eval(current_strengths)
-    #     print('hi', cs)
-    #     print('type', type(cs))
-    #     temp = [item for item in strengths if item not in current_strengths]
-    #     temp2 = current_strengths + temp
-    #     stren = ''.join(temp2)
-    #     current_user.strengths = stren
-    #     print('asdknaspdaspdkasp', current_user.strengths)
     weak = str(weaknesses)
     # Checks whether the weaknesses is empty if so a new tasklist is not needed 
     if not weaknesses:
@@ -181,7 +163,6 @@ def content_analysis(df, list, length):
         current_user.weaknesses = weak
         db.session.add(course)
         db.session.commit()
-        print('hi', current_user.strengths)
     else:
         tasklist = gen_task_list(weaknesses)
         print(tasklist)
@@ -189,8 +170,6 @@ def content_analysis(df, list, length):
         current_user.weaknesses = weak
         db.session.add(course)
         db.session.commit()
-        print('hihihihihihi', current_user.strengths)
-    # strengths is '[]' remove the string to get the list and loop through and update
 
 def send_reset_email(user):
     '''
@@ -199,7 +178,7 @@ def send_reset_email(user):
     '''
     token = user.get_reset_token()
     msg = Message('Password Reset Reqest', 
-            sender='noreply@demo.com', 
+            sender='noreply@tutor4u.com', 
             recipients=[user.email])
     msg.body = f''' To reset your password, visit the following link:
 {url_for('users.reset_token', token=token, _external=True)}

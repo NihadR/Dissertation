@@ -24,11 +24,12 @@ def createtask():
         if form.validate_on_submit():
             # Gets the inputted data and creates the task 
             option = request.form.get('options')
+            learning = request.form.get('learning')
             # Content is stored in a json format for the database
             random_string = f'''{form.content.data}'''
             encoded_string = json.dumps(random_string)
             task = Topic(title=form.title.data, description=form.description.data, content=encoded_string,
-                        question_type=option, answer=form.answer.data)
+                        question_type=option, answer=form.answer.data, learning_type=learning)
             db.session.add(task)
             db.session.commit()
             flash('The task has been created', 'success')

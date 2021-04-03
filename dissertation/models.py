@@ -31,7 +31,6 @@ class User(db.Model, UserMixin):
     weaknesses = db.Column(db.String(60), nullable=True)
     is_admin = db.Column(db.Boolean, unique=False, default=False)
     courses = db.relationship('Course', backref='student_id', lazy=True)
-    bnmodels = db.relationship('BNModel', backref='student_id', lazy=True)
 
     def get_reset_token(self, expires_sec=1800):
         '''
@@ -70,21 +69,13 @@ class Topic(db.Model):
     content = db.Column(db.Text, nullable=False)
     question_type = db.Column(db.Text, nullable=False)
     answer = db.Column(db.String(200), nullable=False)
+    learning_type = db.Column(db.String(20), nullable=False)
 
     def __repr__(self):
         '''
         Returns the information from the Topic table when called in this format
         '''
-        return f"Topic('{self.id}', '{self.title}', '{self.description}', '{self.content}', '{self.question_type}', '{self.answer}')"
-
-
-class BNModel(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    def __repr__(self):
-        return f"BNModel('{self.user_id}')"
+        return f"Topic('{self.id}', '{self.title}', '{self.description}', '{self.content}', '{self.question_type}', '{self.answer}', '{self.learning_type}')"
 
 
 class Course(db.Model):
