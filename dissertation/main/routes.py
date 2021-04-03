@@ -11,7 +11,10 @@ def home():
     Home page 
     Runs the model when first landing on the page 
     '''
-    runmodel()
+    try:
+        runmodel()
+    except Exception as e:
+        return abourt(500)
     return render_template('main/home.html')
 
 

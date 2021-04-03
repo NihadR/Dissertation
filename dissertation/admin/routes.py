@@ -15,22 +15,25 @@ def createtask():
     Allows admin to create a new task
     Creates the task and pushes it to database
     '''
-    form = TopicForm()
-    # Checks whether the user trying to access the page is an admin
-    # if current_user.is_admin == False:
-    #     abort(403)
-    if form.validate_on_submit():
-        # Gets the inputted data and creates the task 
-        option = request.form.get('options')
-        # Content is stored in a json format for the database
-        random_string = f'''{form.content.data}'''
-        encoded_string = json.dumps(random_string)
-        task = Topic(title=form.title.data, description=form.description.data, content=encoded_string,
-                     question_type=option, answer=form.answer.data)
-        db.session.add(task)
-        db.session.commit()
-        flash('The task has been created', 'success')
-        return redirect(url_for('admin.createtask'))
+    try:
+        form = TopicForm()
+        # Checks whether the user trying to access the page is an admin
+        # if current_user.is_admin == False:
+        #     abort(403)
+        if form.validate_on_submit():
+            # Gets the inputted data and creates the task 
+            option = request.form.get('options')
+            # Content is stored in a json format for the database
+            random_string = f'''{form.content.data}'''
+            encoded_string = json.dumps(random_string)
+            task = Topic(title=form.title.data, description=form.description.data, content=encoded_string,
+                        question_type=option, answer=form.answer.data)
+            db.session.add(task)
+            db.session.commit()
+            flash('The task has been created', 'success')
+            return redirect(url_for('admin.createtask'))
+    except Exception as e:
+        return abort(500)
     return render_template('admin/create_task.html', title='Create Task', form=form)
 
 
@@ -43,7 +46,10 @@ def view_topics():
     # Checks whether the user trying to access the page is an admin
     # if current_user.is_admin == False:
     #     abort(403)
+    try:
     topics = Topic.query.all()
+    except Exception as e:
+        return abort(500)
     return render_template('admin/view_topics.html', topics=topics)
 
 
@@ -57,7 +63,10 @@ def topic(topic_id):
     # Checks whether the user trying to access the page is an admin
     # if current_user.is_admin == False:
     #     abort(403)
-    topic = Topic.query.get_or_404(topic_id)
+    try:
+        topic = Topic.query.get_or_404(topic_id)
+    except Exception as e:
+        return abort(500)
     return render_template('admin/topic.html', title=topic.title, topic=topic)
 
 
@@ -71,23 +80,26 @@ def update_topic(topic_id):
     # Checks whether the user trying to access the page is an admin
     # if current_user.is_admin == False:
     #     abort(403)
-    topic = Topic.query.get_or_404(topic_id)
-    form = TopicForm()
-    if form.validate_on_submit():
-        # Takes the new data and updates it in the database
-        topic.title = form.title.data
-        topic.content = form.content.data
-        topic.answer = form.answer.data
-        topic.description = form.description.data
-        db.session.commit()
-        flash('Topic has been updated', 'success')
-        return redirect(url_for('admin.topic', topic_id=topic_id))
-    elif request.method == 'GET':
-        # Displays the current information regarding that task on the page 
-        form.title.data = topic.title
-        form.content.data = topic.content
-        form.answer.data = topic.answer
-        form.description.data = topic.description
+    try:
+        topic = Topic.query.get_or_404(topic_id)
+        form = TopicForm()
+        if form.validate_on_submit():
+            # Takes the new data and updates it in the database
+            topic.title = form.title.data
+            topic.content = form.content.data
+            topic.answer = form.answer.data
+            topic.description = form.description.data
+            db.session.commit()
+            flash('Topic has been updated', 'success')
+            return redirect(url_for('admin.topic', topic_id=topic_id))
+        elif request.method == 'GET':
+            # Displays the current information regarding that task on the page 
+            form.title.data = topic.title
+            form.content.data = topic.content
+            form.answer.data = topic.answer
+            form.description.data = topic.description
+    except Exception as e:
+        return abort(500)
     return render_template('admin/update_task.html', title='Update Task', form=form)
 
 
