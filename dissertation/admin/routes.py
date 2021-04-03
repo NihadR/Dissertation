@@ -4,6 +4,7 @@ from dissertation.models import Topic
 from flask_login import  login_required, current_user
 from dissertation.admin.forms import TopicForm
 import json
+import traceback
 
 admin = Blueprint('admin', __name__)
 
@@ -33,6 +34,7 @@ def createtask():
             flash('The task has been created', 'success')
             return redirect(url_for('admin.createtask'))
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('admin/create_task.html', title='Create Task', form=form)
 
@@ -47,8 +49,9 @@ def view_topics():
     # if current_user.is_admin == False:
     #     abort(403)
     try:
-    topics = Topic.query.all()
+        topics = Topic.query.all()
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('admin/view_topics.html', topics=topics)
 
@@ -66,6 +69,7 @@ def topic(topic_id):
     try:
         topic = Topic.query.get_or_404(topic_id)
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('admin/topic.html', title=topic.title, topic=topic)
 
@@ -99,6 +103,7 @@ def update_topic(topic_id):
             form.answer.data = topic.answer
             form.description.data = topic.description
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('admin/update_task.html', title='Update Task', form=form)
 

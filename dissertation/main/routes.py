@@ -1,5 +1,6 @@
-from flask import render_template, request, Blueprint
+from flask import render_template, request, Blueprint, abort
 from dissertation.algorithm import runmodel
+import traceback
 
 main = Blueprint('main', __name__)
 
@@ -14,7 +15,8 @@ def home():
     try:
         runmodel()
     except Exception as e:
-        return abourt(500)
+        traceback.print_exc()
+        return abort(500)
     return render_template('main/home.html')
 
 

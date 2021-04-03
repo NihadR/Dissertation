@@ -10,6 +10,7 @@ from dissertation.users.utils import pretest_analysis, gen_task_list,get_course,
 import pandas as pd
 import json
 import time
+import traceback
 from datetime import datetime
 from statistics import mode
 
@@ -39,6 +40,7 @@ def register():
             flash('Your account has been created', 'success')
             return redirect(url_for('users.login'))
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/register.html', title='Register', form=form)
 
@@ -66,6 +68,7 @@ def login():
             else:
                 flash('Login Unsuccessful. Please check email and password', 'danger')
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/login.html', title='login', form=form)
 
@@ -98,6 +101,7 @@ def account():
             form.username.data = current_user.username
             form.email.data = current_user.email
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/account.html', title='acount', form=form)
 
@@ -167,6 +171,7 @@ def learning_style():
             flash('Learning Style results have been submitted', 'success')
             return redirect(url_for('users.account'))
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/lstyle.html',  q=questions, q3=questions3)
 
@@ -225,6 +230,7 @@ def pretest():
             pretest_analysis(pred)
             return redirect(url_for('main.home'))
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/pretest.html',  q=question)
 
@@ -283,6 +289,7 @@ def content():
             content_analysis(pred, testanswers, length)
             return redirect(url_for('users.dashboard'))
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/content.html', q=questions, enumerate=enumerate)
 
@@ -318,6 +325,7 @@ def reset_request():
             flash('An email has been sent with instructions to reset your password.', 'info')
             return redirect(url_for('users.login'))
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/reset_request.html', form=form, title="Reset Password")
 
@@ -345,5 +353,6 @@ def reset_token(token):
             flash('Your password has been reset', 'success')
             return redirect(url_for('users.login'))
     except Exception as e:
+        traceback.print_exc()
         return abort(500)
     return render_template('user/reset_token.html', form=form, title="Reset Password")
