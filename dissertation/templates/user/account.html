@@ -13,6 +13,14 @@
     <p class="text-secondary">
       Learning Style: {{ current_user.learning_style }}
     </p>
+    <p class="text-secondary">Strengths:</p>
+    {% for i in stren %}
+    <pre><p class="text-secondary">{{ i }}</p></pre>
+    {% endfor %}
+    <p class="text-secondary">Weaknesses:</p>
+    {% for i in weak %}
+      <pre><p class="text-secondary">-{{ i }}</p></pre>
+    {% endfor %}
   </div>
   <div class="content-section">
     <form method="POST" action="">

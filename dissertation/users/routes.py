@@ -11,6 +11,7 @@ import pandas as pd
 import json
 import time
 import traceback
+import ast
 from datetime import datetime
 from statistics import mode
 
@@ -89,6 +90,15 @@ def account():
     '''
     try:
         form = UpdateAccForm()
+        # Displays users strengths and weaknesses
+        if not current_user.strengths:
+            stren = current_user.strengths
+        else:
+            stren = ast.literal_eval(current_user.strengths)
+        if not current_user.weaknesses:
+            weak = current_user.weaknesses
+        else:
+            weak = ast.literal_eval(current_user.weaknesses)
         if form.validate_on_submit():
             # Gets the updated user details from the form and updates the database
             current_user.username = form.username.data
@@ -103,7 +113,7 @@ def account():
     except Exception as e:
         traceback.print_exc()
         return abort(500)
-    return render_template('user/account.html', title='acount', form=form)
+    return render_template('user/account.html', title='acount', form=form, stren=stren, weak=weak)
 
 
 @users.route('/dashboard')
@@ -112,10 +122,6 @@ def dashboard():
     '''
     Route to act as a home page for all further actions by the user 
     '''
-    print(current_user.strengths)
-    print(type(current_user.strengths))
-    print(current_user.weaknesses)
-    print(type(current_user.weaknesses))
     return render_template('user/dashboard.html')
 
 @users.route('/learning_style', methods=['GET', 'POST'])
@@ -228,6 +234,7 @@ def pretest():
             # Passes this through the dataframe to the pretest_analysis function
             pred = predictmodel(df)
             pretest_analysis(pred)
+            flash('Pretest results have been submitted successfully', 'success')
             return redirect(url_for('main.home'))
     except Exception as e:
         traceback.print_exc()
@@ -287,6 +294,7 @@ def content():
             pred = predictmodel(df)
             print('content', pred)
             content_analysis(pred, testanswers, length)
+            flash('Responses have been submitted successfully', 'success')
             return redirect(url_for('users.dashboard'))
     except Exception as e:
         traceback.print_exc()

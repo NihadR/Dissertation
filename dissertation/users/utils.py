@@ -51,8 +51,8 @@ def pretest_analysis(df):
     else:
         strengths.append('forloop')
     # Converts the list to a string for database input 
-    stren = ''.join(strengths)
-    weak = ''.join(weaknesses)
+    stren = str(strengths)
+    weak = str(weaknesses)
     # Generates a task list and creates a course for the student 
     tasklist = gen_task_list(weaknesses)
     course = Course(student_id=current_user, task_list=str(tasklist))
@@ -157,7 +157,7 @@ def content_analysis(df, list, length):
 
     # Checks against the original questions to see what strengths the user has
     new_stren = [item for item in all_types if item not in weaknesses]
-    current_user.strengths = ''.join(new_stren)
+    current_user.strengths = str(new_stren)
 
     # if not strengths:
     #     pass
@@ -174,7 +174,7 @@ def content_analysis(df, list, length):
     #     stren = ''.join(temp2)
     #     current_user.strengths = stren
     #     print('asdknaspdaspdkasp', current_user.strengths)
-    weak = ''.join(weaknesses)
+    weak = str(weaknesses)
     # Checks whether the weaknesses is empty if so a new tasklist is not needed 
     if not weaknesses:
         course = Course(student_id=current_user, task_list='')
