@@ -6,7 +6,7 @@ from dissertation.users.testquestions import questions, lsquestions, lsquestions
 from dissertation.users.info import infor
 from dissertation.users.forms import RegistrationForm, LoginForm, UpdateAccForm, RequestResetForm, ResetPasswordForm
 from dissertation.models import User, Topic, Course
-from dissertation.users.utils import pretest_analysis, gen_task_list,get_course,content_analysis,send_reset_email
+from dissertation.users.utils import pretest_analysis, gen_task_list,get_course,content_analysis,send_reset_email, find_attempts
 import pandas as pd
 import json
 import time
@@ -34,8 +34,9 @@ def register():
             # Commits to the database
             hashed_password = bcrypt.generate_password_hash(
                 form.password.data).decode('utf-8')
+            attempts = [0,0,0]
             user = User(username=form.username.data,
-                        email=form.email.data, password=hashed_password, test_taken=False,learning_style='Reading/Writing', pretest_result=0, is_admin=False)
+                        email=form.email.data, password=hashed_password, test_taken=False,learning_style='Reading/Writing',attempts=str(attempts), pretest_result=0, is_admin=False)
             db.session.add(user)
             db.session.commit()
             flash('Your account has been created', 'success')
@@ -132,6 +133,8 @@ def learning_style():
     pre-defined learning styles and total the different types, taking the mode
     Update the users account and redirect them to the account page
     '''
+    if current_user.learning_style_test_taken == True:
+        return abort(403)
     try:
         questions = lsquestions
         questions3 = lsquestions3
@@ -190,6 +193,8 @@ def pretest():
     User input is taken and keys are matched with answers to calculate the user's score
     Transformed into a datafram and fed into the model 
     '''
+    if current_user.test_taken == True:
+        return abort(403)
     try:
         question = questions
         global var
@@ -198,7 +203,7 @@ def pretest():
 
         if request.method == 'POST':
             endtime = datetime.now()
-            
+
             testanswers = []
             for i in question:
                 # Gets the keys from the form and match them with correct answer
@@ -256,7 +261,9 @@ def content():
         if request.method == 'POST':
             endtime = datetime.now()
             testanswers = []
-
+            attempts = ast.literal_eval(current_user.attempts)
+            print('before', attempts)
+            'import the list here and use ast to convert it '
             # enumerated keys are processed to prevent keyerrors from dictionary 
             # checks whether the correct answer has been given and appends accordingly 
             for i in questions:
@@ -265,30 +272,55 @@ def content():
                 if new_key == i.get('answer'):
                     testanswers.append(1)
                     testanswers.append(i['question_type'])
+                    if i['question_type'] == 'statement':
+                        attempts[0] = attempts[0] + 1
+                    elif i['question_type'] == 'ifstatement':
+                        attempts[1] = attempts[1] + 1
+                    else:
+                        attempts[2] = attempts[2] + 1      
                 else:
                     testanswers.append(0)
                     testanswers.append(i['question_type'])
+                    if i['question_type'] == 'statement':
+                        attempts[0] = attempts[0] + 1
+                    elif i['question_type'] == 'ifstatement':
+                        attempts[1] = attempts[1] + 1
+                    else:
+                        attempts[2] = attempts[2] + 1
+            print(attempts)
+            current_user.attempts = str(attempts)
+            db.session.commit()
 
             length = len(testanswers)
-        
+            print('attempts', current_user.attempts)
             # Creates appropriate length dictionary according to the amount of questions the user was given
             if length/2 == 1:
+                #could do if statements check and assign to variable, create a method to do it 
+                # pass through the test answers and then check reduce the code in this one app 
+                exlength = 1
+                att = find_attempts(testanswers, exlength)
                 df = pd.DataFrame({'user_id': [current_user.id],
                                 'skill_name': [testanswers[1]],
-                                'correct': [testanswers[0]], 
+                                'correct': [testanswers[0]],
+                                'attempts': [att],
                                 'start_time': [var],
                                 'end_time': [endtime]})
             elif length/2 == 2:
+                exlength = 2
+                att1, att2 = find_attempts(testanswers, exlength)
                 df = pd.DataFrame({'user_id': [current_user.id, current_user.id],
                                 'skill_name': [testanswers[1], testanswers[3]],
                                 'correct': [testanswers[0], testanswers[2]],
-                                    'start_time': [var, var],
+                                'attempts': [att1, att2],
+                                'start_time': [var, var],
                                 'end_time': [endtime, endtime]})
             else:
+                attempts = current_user.attempts
                 df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
                                 'skill_name': [testanswers[1], testanswers[3], testanswers[5]],
                                 'correct': [testanswers[0], testanswers[2], testanswers[4]],
-                                    'start_time': [var, var, var],
+                                'attempts': [attempts[0], attempts[1], attempts[2]],
+                                'start_time': [var, var, var],
                                 'end_time': [endtime, endtime, endtime]})
             # Calls predict function on the dataframe and passes the output to the be analysed further
             pred = predictmodel(df)

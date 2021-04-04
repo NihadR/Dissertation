@@ -20,11 +20,11 @@ d2 = datetime.strptime('2:10 PM', '%I:%M %p')
 with open('dataset.csv', 'w', newline='') as f:
     thewriter = csv.writer(f)
 
-    thewriter.writerow(['row_id','user_id', 'skill_name', 'correct',
+    thewriter.writerow(['row_id','user_id', 'skill_name', 'correct','attempts',
                         'start_time', 'end_time'])
+    
     count = 10000000
-
-    for i in range(0, 300000):
+    for i in range(0, 75000):
         count += 1
 
         choice = random.randint(0, 1)
@@ -34,25 +34,23 @@ with open('dataset.csv', 'w', newline='') as f:
         stime = random.randint(30000, 500000)
         xtime = random.randint(30000, 500000)
         endtime = random_date(d1, d2)
-        thewriter.writerow([0, count, 'statement', choice, '1/1/2021 1:30 PM', endtime])
-        thewriter.writerow([0,count, 'ifstatement', schoice, '1/1/2021 1:30 PM', endtime])
-        thewriter.writerow([0,count, 'forloop', xchoice,  '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0, count, 'statement', choice, 0, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'ifstatement', schoice, 0, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'forloop', xchoice, 0, '1/1/2021 1:30 PM', endtime])
+    
+    for i in range(0, 225000):
+        count += 1
+        attempt1= random.randint(0,4)
+        attempt2 =random.randint(0,4)
+        attempt3 =random.randint(0,4)
+        choice = random.randint(0, 1)
+        schoice = random.randint(0, 1)
+        xchoice = random.randint(0, 1)
+        time = random.randint(30000, 500000)
+        stime = random.randint(30000, 500000)
+        xtime = random.randint(30000, 500000)
+        endtime = random_date(d1, d2)
+        thewriter.writerow([0, count, 'statement', choice, attempt1, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'ifstatement', schoice, attempt2, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'forloop', xchoice, attempt3, '1/1/2021 1:30 PM', endtime])
 
-
-# TRAINED PARAMS                               value
-# skill       param   class          
-# statement   prior   default 0.74341
-#             learns  default 1.00000
-#             guesses default 0.13280
-#             slips   default 0.37607
-#             forgets default 0.00000
-# ifstatement prior   default 0.67054
-#             learns  default 1.00000
-#             guesses default 0.22585
-#             slips   default 0.36619
-#             forgets default 0.00000
-# forloop     prior   default 0.83905
-#             learns  default 1.00000
-#             guesses default 0.02186
-#             slips   default 0.40736
-#             forgets default 0.00000

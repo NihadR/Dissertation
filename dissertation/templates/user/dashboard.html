@@ -37,7 +37,7 @@
     </p>
   </div>
 </article>
-
+{% if current_user.test_taken == True and current_user.learning_style_test_taken == True %}
 <article class="media content-section">
   <div class="media-body">
     <h2>
@@ -48,7 +48,7 @@
     </p>
   </div>
 </article>
-
+{% endif %}
 <article class="media content-section">
   <div class="media-body">
     <h2>

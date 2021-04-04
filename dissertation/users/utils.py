@@ -64,8 +64,6 @@ def pretest_analysis(df):
     db.session.commit()
 
 
-
-
 def get_course():
     '''
     Gets the course from the database and finds the related topics, constructes it in a dictionary
@@ -99,6 +97,24 @@ def get_course():
             questions.append(dic)
 
     return questions
+
+def find_attempts(testanswers, length):
+    attempts = current_user.attempts
+    if length == 1:
+        if testanswers[1] == 'statement':
+            return attempts[0]
+        elif testanswers[1] == 'ifstatement':
+            return attempts[1]
+        else:
+            return attempts[2]
+    else:
+        if testanswers[1] == 'statement' and testanswers[3] == 'ifstatement':
+            return attempts[0], attempts[1]
+        elif testanswers[1] == 'statement' and testanswers[3] == 'forloop':
+            return attempts[0], attempts[2]
+        elif testanswers[1] == 'ifstatement' and testanswers[3] == 'forloop':
+            return attempts[1], attempts[2]
+    
 
 def content_analysis(df, list, length):
     '''
@@ -139,7 +155,7 @@ def content_analysis(df, list, length):
         forloop = df['state_predictions'].iloc[2]
         state = (list[1], df['state_predictions'].iloc[0])
         state1 = (list[3], df['state_predictions'].iloc[1])
-        state2 = (list[5], df['state_predictions'].iloc[1])
+        state2 = (list[5], df['state_predictions'].iloc[2])
         if state[1] < 0.8:
             weaknesses.append(state[0])
         else:
