@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-model = Model()
+model = Model(num_fits=1)
 count = 0
 
 def runmodel():
@@ -71,3 +71,4 @@ def evaluate():
     print("Training RMSE: %f" % training_rmse)
     print("Training AUC: %f" % training_auc)
     print("Training Accuracy: %f" % training_acurracy)
+    return training_rmse, training_auc, training_acurracy

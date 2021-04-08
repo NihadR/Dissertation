@@ -3,6 +3,7 @@ from dissertation import db
 from dissertation.models import Topic
 from flask_login import  login_required, current_user
 from dissertation.admin.forms import TopicForm
+from dissertation.algorithm import evaluate
 import json
 import traceback
 
@@ -38,6 +39,22 @@ def createtask():
         traceback.print_exc()
         return abort(500)
     return render_template('admin/create_task.html', title='Create Task', form=form)
+
+
+@admin.route('/evaluate')
+@login_required
+def admin_evaluate():
+    '''
+    Evaluates the model 
+    '''
+    if current_user.is_admin == False:
+        abort(403)
+    try:
+        rmse, auc, accuracy = evaluate()
+    except Exception as e:
+        traceback.print_exc()
+        return abort(500)
+    return render_template('admin/evaluate.html', rmse=rmse, auc=auc, accuracy=accuracy)
 
 
 @admin.route('/view_topics')
