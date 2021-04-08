@@ -7,7 +7,7 @@
   <form action="" method="POST">
     <ol>
       {% for question_number, i in enumerate(q) %}
-      <li>{{ i.title }}</li>
+      <li>{{ i.description }}</li>
       <li hidden>{{ i.question_type }}</li>
       {% for key in i.content.keys() %}
       {% set new_key = question_number ~ '-' ~ key %}

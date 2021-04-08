@@ -14,8 +14,9 @@ def gen_task_list(weaknesses):
     '''
     tasklist = []
     for i in weaknesses:
-        task = Topic.query.filter_by(question_type=i, learning_type=current_user.learning_style).all()
-        print(task)
+        task = Topic.query.filter_by(question_type=i).all()
+        # To include learning style
+        # task = Topic.query.filter_by(question_type=i, learning_type=current_user.learning_style).all()
         length = len(task)
         # Checks whether the amount of tasks is one if so returns that
         if length == 1:
@@ -70,7 +71,6 @@ def get_course():
     format and returns in a list
     '''
     course = Course.query.filter_by(user_id=current_user.id).first()
-    print('checking in', course)
     questions = []
     if not course.task_list:
         return questions
@@ -99,6 +99,9 @@ def get_course():
     return questions
 
 def find_attempts(testanswers, length):
+    '''
+    Finds the correct matching of attempts to the question 
+    '''
     attempts = current_user.attempts
     if length == 1:
         if testanswers[1] == 'statement':
@@ -181,7 +184,6 @@ def content_analysis(df, list, length):
         db.session.commit()
     else:
         tasklist = gen_task_list(weaknesses)
-        print(tasklist)
         course = Course(student_id=current_user, task_list=str(tasklist))
         current_user.weaknesses = weak
         db.session.add(course)

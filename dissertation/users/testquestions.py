@@ -6,27 +6,27 @@ questions = [
      'answers': {'1': '''
     public class Main {
         public static void main(String[] args) {
-            Int Price =10;
-            Int Money =15;
-            Int Money_After = money-price;
+            int Price =10;
+            int Money =15;
+            int Money_After = money-price;
             System.out.println(Money_After);
          }
     }''',
                  '2':  '''
     public class Main {
         public static void main(String[] args) {
-            String Price =10;
-            String Money =15;
-            String Money_After = money-price;
+            string Price =10;
+            string Money =15;
+            string Money_After = money-price;
             System.out.println(Money_After);
         }
     }''',
                  '3':  '''
     public class Main {
         public static void main(String[] args) {
-            Int Price =15;
-            Int Money =10;
-            String Money_After = price-money;
+            int Price =15;
+            int Money =10;
+            string Money_After = price-money;
             System.out.println(Money_After);
         }
     }''',
@@ -111,17 +111,17 @@ questions = [
      "answers": {'1': '''
     public class Main {
         public static void main(String[] args) {
-            Bool stayHome = False;
-            Bool isRaining = True;
+            bool stayHome = False;
+            bool isRaining = True;
             if (isRaining == True);
                 stayHome = True;
         }
-    }''',
+    }''', 
                  '2': '''
     public class Main {
         public static void main(String[] args) {
-            Bool stayHome = False;
-            Bool isRaining = True;
+            bool stayHome = False;
+            bool isRaining = True;
             if (isRaining.isequals(True));
                 stayHome = True;
         }
@@ -129,8 +129,8 @@ questions = [
                  '3': '''
     public class Main {
         public static void main(String[] args) {
-            Bool stayHome = False;
-            Bool isRaining = True;
+            bool stayHome = False;
+            bool isRaining = True;
             if (isRaining = True);
                 stayHome = true;
         }

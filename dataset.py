@@ -34,15 +34,15 @@ with open('dataset.csv', 'w', newline='') as f:
         stime = random.randint(30000, 500000)
         xtime = random.randint(30000, 500000)
         endtime = random_date(d1, d2)
-        thewriter.writerow([0, count, 'statement', choice, 0, '1/1/2021 1:30 PM', endtime])
-        thewriter.writerow([0,count, 'ifstatement', schoice, 0, '1/1/2021 1:30 PM', endtime])
-        thewriter.writerow([0,count, 'forloop', xchoice, 0, '1/1/2021 1:30 PM', endtime])
+        thewriter.writerow([0, count, 'statement', choice, 0, '1/1/1900 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'ifstatement', schoice, 0, '1/1/1900 1:30 PM', endtime])
+        thewriter.writerow([0,count, 'forloop', xchoice, 0, '1/1/1900 1:30 PM', endtime])
     
     for i in range(0, 225000):
         count += 1
-        attempt1= random.randint(0,4)
-        attempt2 =random.randint(0,4)
-        attempt3 =random.randint(0,4)
+        attempt1= random.randint(0,7)
+        attempt2 =random.randint(0,7)
+        attempt3 =random.randint(0,7)
         choice = random.randint(0, 1)
         schoice = random.randint(0, 1)
         xchoice = random.randint(0, 1)

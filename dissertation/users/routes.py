@@ -34,9 +34,8 @@ def register():
             # Commits to the database
             hashed_password = bcrypt.generate_password_hash(
                 form.password.data).decode('utf-8')
-            attempts = [0,0,0]
-            user = User(username=form.username.data,
-                        email=form.email.data, password=hashed_password, test_taken=False,learning_style='Reading/Writing',attempts=str(attempts), pretest_result=0, is_admin=False)
+            user = User(username=form.username.data, email=form.email.data, password=hashed_password, test_taken=False, 
+                        learning_style_test_taken=False,attempts=str([0,0,0]), pretest_result=0, is_admin=True)
             db.session.add(user)
             db.session.commit()
             flash('Your account has been created', 'success')
@@ -232,6 +231,7 @@ def pretest():
             df = pd.DataFrame({'user_id': [current_user.id, current_user.id, current_user.id],
                             'skill_name': ['statement', 'ifstatement', 'forloop'],
                             'correct': [state, ifstate, forl],
+                            'attempts':[0, 0, 0],
                             'start_time': [var, var, var],
                             'end_time': [endtime, endtime, endtime]})
 
@@ -253,6 +253,8 @@ def content():
 
     Returns the user to the dashboard
     '''
+    if current_user.test_taken == False and current_user.learning_style_test_taken == False:
+        return abort(403)
     try:
         questions = get_course()
         global var

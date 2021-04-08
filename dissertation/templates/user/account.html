@@ -14,13 +14,21 @@
       Learning Style: {{ current_user.learning_style }}
     </p>
     <p class="text-secondary">Strengths:</p>
+    {% if not stren %}
+    <pre><p class="text-secondary"> None </p></pre>
+    {% else %}
     {% for i in stren %}
     <pre><p class="text-secondary">{{ i }}</p></pre>
     {% endfor %}
+    {% endif %}
     <p class="text-secondary">Weaknesses:</p>
+    {% if not weak %}
+    <pre><p class="text-secondary"> None </p></pre>
+    {% else %}
     {% for i in weak %}
-      <pre><p class="text-secondary">-{{ i }}</p></pre>
-    {% endfor %}
+    <pre><p class="text-secondary">-{{ i }}</p></pre>
+  {% endfor %}
+    {% endif %}
   </div>
   <div class="content-section">
     <form method="POST" action="">

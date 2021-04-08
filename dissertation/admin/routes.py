@@ -16,11 +16,11 @@ def createtask():
     Allows admin to create a new task
     Creates the task and pushes it to database
     '''
+    if current_user.is_admin == False:
+        abort(403)
     try:
         form = TopicForm()
         # Checks whether the user trying to access the page is an admin
-        # if current_user.is_admin == False:
-        #     abort(403)
         if form.validate_on_submit():
             # Gets the inputted data and creates the task 
             option = request.form.get('options')
@@ -47,8 +47,8 @@ def view_topics():
     Allows the admin to view all topics in the database
     '''
     # Checks whether the user trying to access the page is an admin
-    # if current_user.is_admin == False:
-    #     abort(403)
+    if current_user.is_admin == False:
+        abort(403)
     try:
         topics = Topic.query.all()
     except Exception as e:
@@ -65,8 +65,8 @@ def topic(topic_id):
     regarding that task
     '''
     # Checks whether the user trying to access the page is an admin
-    # if current_user.is_admin == False:
-    #     abort(403)
+    if current_user.is_admin == False:
+        abort(403)
     try:
         topic = Topic.query.get_or_404(topic_id)
     except Exception as e:
@@ -83,8 +83,8 @@ def update_topic(topic_id):
     Takes the inputted data and updates a task 
     '''
     # Checks whether the user trying to access the page is an admin
-    # if current_user.is_admin == False:
-    #     abort(403)
+    if current_user.is_admin == False:
+        abort(403)
     try:
         topic = Topic.query.get_or_404(topic_id)
         form = TopicForm()
@@ -117,8 +117,8 @@ def admin_dashboard():
     the different functions available to them 
     '''
     # Checks whether the user trying to access the page is an admin
-    # if current_user.is_admin == False:
-    #     abort(403)
+    if current_user.is_admin == False:
+        abort(403)
     return render_template('admin/admin_dashboard.html', title='Admin')
 
 

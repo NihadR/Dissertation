@@ -12,23 +12,12 @@ from dissertation import db, create_app
 db.create_all(app=create_app())
 db.drop_all(app=create_app())
 
-Stuff to do
+Student Account
 
-fix key error bug on content page DONE
+email: nihad1999@hotmail.co.uk
+password:testing
 
-do the about page content, look into compiler if not then do online ide DONE
+Admin Account
 
-add something to homepage DONE
-do dashboard button points DONE
-
-do is_admin and make sure pages have correct accesss DONE
-pages have been altered, recreate database and test DONE (remember to change back to true)
-
-check strengths to see if it is being added DONE
-
-REFACTOR DONE
-
-Comments DONE
-
-Look into adding learning style type to questions and checking for it
-Testing
+email:testing@company.com
+password:testing
