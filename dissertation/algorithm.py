@@ -41,7 +41,6 @@ def predictmodel(s_df):
     :param s_df: dataframe with student information
     :return: dataframe with correct and state_predictions
     '''
-    print('PREDICTED PARAMS', model.params())
     df = s_df
     retrain(df)
     preds_df = model.predict(data=s_df)
