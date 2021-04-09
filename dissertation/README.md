@@ -1,5 +1,10 @@
 # Dissertation
 
+To create the conda environment
+
+- conda create --name disso --file requirements.txt
+- conda activate disso
+
 1. This project was made in a conda environment
 2. Debug mode
    export FLASK_DEBUG=1
