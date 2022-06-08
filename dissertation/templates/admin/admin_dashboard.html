@@ -1,0 +1,39 @@
+{% extends "template.html" %} {% block content %} 
+  <article class="media content-section">
+    <div class="media-body">
+      <h2>
+        <a class="article-title" href="{{ url_for('admin.createtask') }}">Create Task</a>
+      </h2>
+      <p class="article-content">
+        Create new tasks 
+      </p>
+    </div>
+  </article>
+
+  <article class="media content-section">
+    <div class="media-body">
+      <h2>
+        <a class="article-title" href="{{ url_for('admin.view_topics') }}"
+          >View Topics</a
+        >
+      </h2>
+      <p class="article-content">
+        View current topics and update them
+      </p>
+    </div>
+  </article>
+  <article class="media content-section">
+    <div class="media-body">
+      <h2>
+        <a class="article-title" href="{{ url_for('admin.admin_evaluate') }}"
+          >Evaluate Model</a
+        >
+      </h2>
+      <p class="article-content">
+        Evaluates the model using 3 different techniques
+      </p>
+    </div>
+  </article>
+  
+  {% endblock %}
+  

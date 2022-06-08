@@ -1,0 +1,12 @@
+{% extends "template.html" %} {% block content %} 
+<div class="content-section">
+    <div class="media-body">
+        <p class="text-secondary">RMSE:</p>
+        <pre><p class="text-secondary">{{ rmse }}</p></pre>
+        <p class="text-secondary">AUC:</p>
+        <pre><p class="text-secondary">{{ auc }}</p></pre>
+        <p class="text-secondary">Accuracy:</p>
+        <pre><p class="text-secondary">{{ accuracy }}</p></pre>
+    </div>
+</div>
+{% endblock content %}

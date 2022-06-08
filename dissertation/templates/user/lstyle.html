@@ -1,0 +1,24 @@
+{% extends "template.html" %} {% block content %}
+
+<div class="content-section">
+  <form action="" method="POST">
+    <ol>
+      {% for i in q %}
+      <li>{{ i }}</li>
+      {% for j in q[i] %}
+      <input type="radio" value="{{ j }}" name="{{ i }}" required />{{
+        j
+      }}<br />
+      {% endfor %} {% endfor %} {% for i in q3 %}
+      <li>{{ i }}</li>
+      {% for j in q3[i] %}
+      <input type="radio" value="{{ j }}" name="{{ i }}" required />{{
+        j
+      }}<br />
+      {% endfor %} {% endfor %}
+    </ol>
+    <input type="submit" value="Submit" />
+  </form>
+</div>
+
+{% endblock content %}

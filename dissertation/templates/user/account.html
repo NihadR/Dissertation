@@ -1,0 +1,73 @@
+{% extends "template.html" %} {% block content %}
+<div class="content-section">
+  <div class="media-body">
+    <h2 class="account-heading">{{ current_user.username }}</h2>
+    <p class="text-secondary">{{ current_user.email }}</p>
+    {% if current_user.test_taken == False %}
+    <p class="text-secondary">
+      Taken the test? No
+    </p>
+    {% else %}
+    <p class="text-secondary">Taken the test? Yes</p>
+    {% endif %}
+    <p class="text-secondary">
+      Learning Style: {{ current_user.learning_style }}
+    </p>
+    <p class="text-secondary">Strengths:</p>
+    {% if not stren %}
+    <pre><p class="text-secondary"> None </p></pre>
+    {% else %}
+    {% for i in stren %}
+    <pre><p class="text-secondary">{{ i }}</p></pre>
+    {% endfor %}
+    {% endif %}
+    <p class="text-secondary">Weaknesses:</p>
+    {% if not weak %}
+    <pre><p class="text-secondary"> None </p></pre>
+    {% else %}
+    {% for i in weak %}
+    <pre><p class="text-secondary">-{{ i }}</p></pre>
+  {% endfor %}
+    {% endif %}
+  </div>
+  <div class="content-section">
+    <form method="POST" action="">
+      {{ form.hidden_tag() }}
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Account Information</legend>
+        <div class="form-group">
+          {{ form.username.label(class="form-control-label") }}
+
+          {% if form.username.errors %}
+          {{ form.username(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.username.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %}
+          {{ form.username(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+        <div class="form-group">
+          {{ form.email.label(class="form-control-label") }}
+
+          {% if form.email.errors %}
+          {{ form.email(class="form-control form-control-lg is-invalid") }}
+          <div class="invalid-feedback">
+            {% for error in form.email.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+          </div>
+          {% else %}
+          {{ form.email(class="form-control form-control-lg") }}
+          {% endif %}
+        </div>
+      </fieldset>
+      <div class="form-group">
+        {{ form.submit(class="btn btn-outlint-info") }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

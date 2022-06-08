@@ -1,0 +1,117 @@
+Title: Statement question 
+Description: Take values length 7 and width 6 and work out the area of the rectangle 
+
+Content: {
+
+"1" : """	public class Main {
+  public static void main(String[] args) {
+           int length = 7;
+Int width = 6;
+Int area = length * width;
+System.out.println(wallet);
+    }  
+  }""",
+"2" : """public class Main {
+  public static void main(String[] args) {
+           int length = 7;
+Int width = 6;
+Int area = length + width;
+System.out.println(wallet);
+    }  
+  }""",
+"3": """public class Main {
+  public static void main(String[] args) {
+           int length = 7;
+Int width = 6;
+Int area = (length *  width)/2;
+System.out.println(wallet);
+    }  
+  } """,
+
+"4" :	"I don't know "}
+
+Answer : 1
+/////////////////////////////////////////////////////////////
+Title : If Statement question 
+Description: Write a program to check if a year is a leap year
+
+Content: {
+
+"1" : """public class Main {
+  public static void main(String[] args) {
+           int year= 2000;
+If (year % 4 == 0){
+System.out.println('This is a leap year');
+    }  
+  }
+}
+""",
+"2": """public class Main {
+  public static void main(String[] args) {
+           int year= 2000;
+If (year / 4 == 0){
+System.out.println('This is a leap year');
+    }  
+  }
+}
+""",
+"3": """public class Main {
+  public static void main(String[] args) {
+           int year= 2000;
+If (year % 4 = 0){
+System.out.println('This is a leap year');
+}
+    }  
+  }
+""",
+"4" : "I don’t know "
+}
+
+Answer: 1
+/////////////////////////////////////////////////////////////
+Title: For Loop question 
+Description: Loop through this list [1,5,4,2,3,6] and add all the numbers together 
+
+Content: {
+    "1": """public class Main{
+     
+    public static void main(String[] args) {
+        int[] numbers = new int[]{ 1,5,4,2,3,6};
+        int sum = 0; 
+        for (int i=0; i < numbers.length ; i++) {
+            sum = sum + numbers[i];
+        }
+   
+        System.out.println(sum);
+     
+    }
+}
+""",
+"2":"""
+public class Main{ 
+    public static void main(String[] args) {
+        int[] numbers = new int[]{ 1,5,4,2,3,6};
+        for (int i=0; i < numbers.length ; i++) {
+            int sum =0;
+            sum = sum + numbers[i];
+        }
+        System.out.println(sum);
+    }
+}
+""",
+"3" : """
+public class Main{     
+    public static void main(String[] args) {
+        int[] numbers = new int[]{ 1,5,4,2,3,6};
+        int sum = 0; 
+        for (int i=0; i < numbers; i++) {
+            sum = sum + numbers[i];
+        }
+        System.out.println(sum);
+    }
+}
+""",
+"4":"I don’t know "
+}
+
+Answer: 1
